@@ -9,16 +9,19 @@ const colours = {  //global variables
 	blue01: 0x97b5e6,
   blue02: 0x78afc4,
   blue03: 0xb8ccd7,
-  green01: 0xb8ccd7,
+  green01: 0x424f23,
   green02: 0x88842b,
-  green03: 0x70603c,
+  green03: 0xb2b854,
   brown01: 0x9b4d26,
   brown02: 0x804e45,
+	brown03: 0xad7d67,
   red01: 0xa54338,
   orange01: 0x9b4d26,
   orange02: 0xad5b29,
   white01: 0xfff6e2,
-  white02: 0xffdecf
+  white02: 0xffdecf,
+	grey01: 0x9d8c72,
+	grey02: 0x9a9693
 };
 
 let scene, camera, fieldOfView, aspectRatio, nearPlane, farPlane, HEIGHT, WIDTH, renderer, container, controls;  //global variables
@@ -161,7 +164,7 @@ const defineCloud = function() {
 
   //Create a cube geometry;
   //this shape will be duplicated to create the cloud
-  let geo = new THREE.BoxGeometry(20, 20, 20); //30, 30, 30
+  let geo = new THREE.IcosahedronGeometry(15); //30, 30, 30
 
   //Create a material; a simple white material
   let mat = new THREE.MeshPhongMaterial({
@@ -239,7 +242,7 @@ function createSky(){
 
 
 
-////////////// DEFINE PINE TREE /////////////////
+////////////// TREE 1: DEFINE PINE TREE /////////////////
 const definePineTree = function() {
 	this.mesh = new THREE.Object3D();
 	let pineTrunkGeo = new THREE.BoxGeometry(2, 13, 2);
@@ -257,7 +260,7 @@ const definePineTree = function() {
 	this.mesh.add(pineTreeTop);
 }
 
-////////////// DEFINE ROUND TREE /////////////
+////////////// TREE 2: DEFINE ROUND TREE /////////////
 const defineRoundTree = function() {
 	this.mesh = new THREE.Object3D();
 	let roundTrunkGeo = new THREE.BoxGeometry(2, 20, 2);
@@ -315,7 +318,7 @@ const defineAppleTreeTop = function() {
     this.mesh.add(blocs);
   }
 }
-///////////// DEFINE APPLE TREE //////////////
+///////////// TREE 3: DEFINE APPLE TREE //////////////
 const defineAppleTree = function() {
 	this.mesh = new THREE.Object3D();
 	let appleTreeTrunkGeo = new THREE.BoxGeometry(2, 20, 2);
@@ -332,19 +335,63 @@ const defineAppleTree = function() {
 	this.mesh.add(appleTreeTop.mesh);
 }
 
+///////// DEFINE SPOTTY TREETOP ////////////
+const defineSpottyTreeTop = function() {
+  // Create an empty container that will hold the blocks of the tree top
+  this.mesh = new THREE.Object3D();
+	this.mesh.scale.set(1.5, 1.5, 1.5);
+
+  //Create a cube geometry;
+  //this shape will be duplicated to create the cloud
+  let spottyTreeTopGeo = new THREE.SphereGeometry(2, 6, 6); //30, 30, 30
+
+  //Create a material; a simple white material
+  let spottyTreeTopMat = new THREE.MeshPhongMaterial({
+    color:colours.green02,flatShading: true});
+
+  // Duplicate the geometry a random number of times
+  let numOfBlocs = 15+Math.floor(Math.random()*3);
+  //Loop to create duplicates
+  for (let i = 0; i < numOfBlocs; i++){
+    //Create the mesh with the geometry + material
+    let blocs = new THREE.Mesh(spottyTreeTopGeo, spottyTreeTopMat);
+    //Set the position and rotation of each cube randomly
+    blocs.position.x = i*.5;
+    blocs.position.y = Math.random()*10;
+    blocs.position.z = Math.random()*10;
+    blocs.rotation.z = Math.random()*Math.PI*2;
+    blocs.rotation.y = Math.random()*Math.PI*2;
+    //Set the size of the cube randomly
+    let size = .7 + Math.random()*2;
+    blocs.scale.set(size,size,size);
+
+    //Alow each cube to cast and receive shadows
+    blocs.castShadow = true;
+    blocs.receiveShadow = true;
+    // Add the cube to the container we created at the beginning.
+    this.mesh.add(blocs);
+  }
+}
+/////////////TREE 4: DEFINE SPOTTY TREE //////////////
+const defineSpottyTree = function() {
+	this.mesh = new THREE.Object3D();
+	let spottyTreeTrunkGeo = new THREE.BoxGeometry(4, 20, 4);
+	let spottyTreeTrunkMat = new THREE.MeshStandardMaterial({color: colours.brown02, flatShading: true});
+	let spottyTreeTrunk = new THREE.Mesh(spottyTreeTrunkGeo, spottyTreeTrunkMat);
+	spottyTreeTrunk.castShadow = true;
+	spottyTreeTrunk.receiveShadow = true;
+	this.mesh.add(spottyTreeTrunk);
+
+	let spottyTreeTop = new defineSpottyTreeTop();
+	spottyTreeTop.mesh.position.set(-8, 6, -5);
+	this.mesh.add(spottyTreeTop.mesh);
+}
 
 /////////////////// CREATE RANDOM FUCKING TREES ///////////////////
-//
-// const defineTreeGrp = function() {
-// 	this.mesh = new THREE.Object3D();
-// 	let pineTree = new definePineTree();
-// 	let	roundTree = new defineRoundTree();
-// 	this.mesh.add(pineTree, roundTree);
-// }
 
 let trees;
 function createTrees() {
-	trees = new defineAppleTree();
+	trees = new defineSpottyTree();
 
 
 	trees.mesh.position.set(0, 305, 0);
@@ -355,20 +402,41 @@ function createTrees() {
 
 //TODO: Read rest of aviator tut, create hero, create trees, create rocks. Git and deploy.
 
-///// TRYING TO LOAD SOME OBJ SHIT ////
-// let manager = new THREE.LoadingManager();
-// 			manager.onProgress = function ( item, loaded, total ) {
-// 				console.log( item, loaded, total );
-// 			};
-//
-// let loader = new THREE.ObjectLoader(manager);
-// loader.load(
-// 	'../models/tree.obj',
-// 	function(object){
-// 		scene.add(object)
-// 	})
 
-//////////
+////// DEFINE ROCK //////////////
+const defineRock = function () {
+	// this.mesh = new THREE.Object3D();
+	let rockGeo = new THREE.BoxGeometry(3, 3, 3);
+	let rockMat = new THREE.MeshStandardMaterial({color:colours.grey01, flatShading:true});
+	let numOfBlocs = Math.floor(Math.random()*3);
+	// Loop to create duplicates, 0-3 duplicates.
+	for (let i = 0; i < numOfBlocs; i++){
+	let blocs = new THREE.Mesh(rockGeo, rockMat);
+	//Set the position and rotation of each cube randomly
+	blocs.position.x = i*3;
+	blocs.position.y = Math.random()*5;
+	blocs.position.z = Math.random()*10;
+	blocs.rotation.z = Math.random()*Math.PI*2;
+	blocs.rotation.y = Math.random()*Math.PI*2;
+	//Set the size of the cube randomly
+	let size = 1 + Math.random()*2;
+	blocs.scale.set(size,size,size);
+	blocs.castShadow = true;
+	blocs.receiveShadow = true;
+	blocs.position.y = 300;
+	this.mesh.add(blocs);
+	}
+}
+//
+// function createRocks(){
+// 	numOfRocks = 30;
+// 	for (var i = 0; i < array.length; i++) {
+// 		array[i]
+// 	}
+// }
+
+
+
 
 
 
@@ -393,6 +461,7 @@ function init() {  //add (event) afterwards
   createGround();
   createSky();
 	createTrees();
+	defineRock();
 
   /// FUCK ORBIT CONTROLS
   // addOrbitControls();
@@ -455,3 +524,18 @@ function addOrbitControls() {
 
   ////// SCREEN RESIZE CALLBACK ///////
   window.addEventListener('resize', handleWindowResize, false);
+
+
+
+	///// TRYING TO LOAD SOME OBJ SHIT ////
+	// let manager = new THREE.LoadingManager();
+	// 			manager.onProgress = function ( item, loaded, total ) {
+	// 				console.log( item, loaded, total );
+	// 			};
+	//
+	// let loader = new THREE.ObjectLoader(manager);
+	// loader.load(
+	// 	'../models/tree.obj',
+	// 	function(object){
+	// 		scene.add(object)
+	// 	})
