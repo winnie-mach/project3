@@ -45165,8 +45165,9 @@ var defineCloud = function defineCloud() {
   var geo = new THREE.IcosahedronGeometry(15); //30, 30, 30
 
   //Create a material; a simple white material
-  var mat = new THREE.MeshPhongMaterial({
-    color: colours.white02
+  var mat = new THREE.MeshStandardMaterial({
+    color: colours.white02,
+    opacity: .5
   });
 
   // Duplicate the geometry a random number of times
@@ -45400,12 +45401,12 @@ function createTrees() {
 
 ////// DEFINE ROCK //////////////
 var defineRock = function defineRock() {
-  // this.mesh = new THREE.Object3D();
-  var rockGeo = new THREE.BoxGeometry(3, 3, 3);
-  var rockMat = new THREE.MeshStandardMaterial({ color: colours.grey01, flatShading: true });
+  this.mesh = new THREE.Object3D();
+  var rockGeo = new THREE.BoxGeometry(30, 30, 30);
+  var rockMat = new THREE.MeshStandardMaterial({ color: colours.green01, flatShading: true });
   var numOfBlocs = Math.floor(Math.random() * 3);
   // Loop to create duplicates, 0-3 duplicates.
-  for (var i = 0; i < numOfBlocs; i++) {
+  for (var i = 1; i < numOfBlocs; i++) {
     var blocs = new THREE.Mesh(rockGeo, rockMat);
     //Set the position and rotation of each cube randomly
     blocs.position.x = i * 3;
@@ -45418,18 +45419,24 @@ var defineRock = function defineRock() {
     blocs.scale.set(size, size, size);
     blocs.castShadow = true;
     blocs.receiveShadow = true;
-    blocs.position.y = 300;
+    // blocs.position.y = 300;
     this.mesh.add(blocs);
   }
 };
-//
-// function createRocks(){
-// 	numOfRocks = 30;
-// 	for (var i = 0; i < array.length; i++) {
-// 		array[i]
-// 	}
-// }
 
+var rocks = void 0;
+function createRocks() {
+  var numOfRocks = 100;
+  for (var i = 0; i < numOfRocks; i++) {
+    rocks = new defineRock();
+    var randomNum = Math.random() * 200;
+    rocks.mesh.position.x = 300 * Math.sin(randomNum);
+    rocks.mesh.position.y = 300 * Math.cos(randomNum);
+    // rocks.mesh.position.z = - 300 * Math.cos(randomNum);
+    console.log(rocks.mesh.position.x, rocks.mesh.position.y, rocks.mesh.position.z);
+    scene.add(rocks.mesh);
+  }
+}
 
 ////////// INIT FUNCTION !!!!!!! ////////
 function init() {
@@ -45444,11 +45451,10 @@ function init() {
   createGround();
   createSky();
   createTrees();
-  defineRock();
+  createRocks();
 
   /// FUCK ORBIT CONTROLS
-  // addOrbitControls();
-
+  addOrbitControls();
 
   // //Add MouseMove Event Listener
   // document.addEventListener('mousemove', handleMouseMove, false);
@@ -45464,6 +45470,7 @@ function loop() {
   //Rotate the propeller, sea and the sky
   // sea.mesh.rotation.z += .005;
   // sky.mesh.rotation.z += .01;
+
   //
   // //Update the plane on each frame
   // updatePlane();
@@ -45518,7 +45525,7 @@ window.addEventListener('resize', handleWindowResize, false);
 // 	function(object){
 // 		scene.add(object)
 // 	})
-},{"../scss/index.scss":6,"../css/index.css":8,"three":10,"dat.gui":12,"three-orbitcontrols":14}],25:[function(require,module,exports) {
+},{"../scss/index.scss":6,"../css/index.css":8,"three":10,"dat.gui":12,"three-orbitcontrols":14}],23:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -45547,7 +45554,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '54936' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '58349' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -45688,5 +45695,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[25,4], null)
+},{}]},{},[23,4], null)
 //# sourceMappingURL=/js.b8953913.map
