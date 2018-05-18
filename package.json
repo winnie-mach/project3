@@ -1,0 +1,19 @@
+{
+  "name": "portfolio",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "dat.gui": "^0.7.2",
+    "node-sass": "^4.9.0",
+    "three": "^0.92.0",
+    "three-orbitcontrols": "^2.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "dev":"parcel app/html/index.html --no-cache"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
