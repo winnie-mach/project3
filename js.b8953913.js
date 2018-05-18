@@ -45396,9 +45396,6 @@ function createTrees() {
   scene.add(trees.mesh);
 }
 
-//TODO: Read rest of aviator tut, create hero, create trees, create rocks. Git and deploy.
-
-
 ////// DEFINE ROCK //////////////
 var defineRock = function defineRock() {
   this.mesh = new THREE.Object3D();
@@ -45429,14 +45426,19 @@ function createRocks() {
   var numOfRocks = 100;
   for (var i = 0; i < numOfRocks; i++) {
     rocks = new defineRock();
-    var randomNum = Math.random() * 200;
-    rocks.mesh.position.x = 300 * Math.sin(randomNum);
-    rocks.mesh.position.y = 300 * Math.cos(randomNum);
-    // rocks.mesh.position.z = - 300 * Math.cos(randomNum);
+    var theta = Math.random(2 * Math.PI);
+    var phi = Math.random(Math.PI);
+    rocks.mesh.position.x = 300 * Math.cos(theta) * Math.cos(phi);
+    rocks.mesh.position.y = 300 * Math.cos(theta) * Math.sin(phi);
+    rocks.mesh.position.z = 300 * Math.cos(theta);
+
     console.log(rocks.mesh.position.x, rocks.mesh.position.y, rocks.mesh.position.z);
     scene.add(rocks.mesh);
   }
 }
+
+//TODO: Read rest of aviator tut, create hero, create trees, create rocks. Git and deploy.
+
 
 ////////// INIT FUNCTION !!!!!!! ////////
 function init() {
@@ -45525,7 +45527,7 @@ window.addEventListener('resize', handleWindowResize, false);
 // 	function(object){
 // 		scene.add(object)
 // 	})
-},{"../scss/index.scss":6,"../css/index.css":8,"three":10,"dat.gui":12,"three-orbitcontrols":14}],23:[function(require,module,exports) {
+},{"../scss/index.scss":6,"../css/index.css":8,"three":10,"dat.gui":12,"three-orbitcontrols":14}],21:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -45554,7 +45556,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '58349' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '54247' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -45695,5 +45697,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[23,4], null)
+},{}]},{},[21,4], null)
 //# sourceMappingURL=/js.b8953913.map
