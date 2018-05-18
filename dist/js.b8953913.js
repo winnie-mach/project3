@@ -45273,10 +45273,11 @@ var defineRoundTree = function defineRoundTree() {
   this.mesh.add(roundTreeTop);
 };
 
-////////// DEFINE APPLE TREE ////////////
+////////// DEFINE APPLE TREETOP ////////////
 var defineAppleTreeTop = function defineAppleTreeTop() {
   // Create an empty container that will hold the blocks of the tree top
   this.mesh = new THREE.Object3D();
+  this.mesh.scale.set(1.5, 1.5, 1.5);
 
   //Create a cube geometry;
   //this shape will be duplicated to create the cloud
@@ -45288,31 +45289,44 @@ var defineAppleTreeTop = function defineAppleTreeTop() {
   });
 
   // Duplicate the geometry a random number of times
-  var numOfBlocs = 3 + Math.floor(Math.random() * 3);
+  var numOfBlocs = 30 + Math.floor(Math.random() * 3);
   //Loop to create duplicates
   for (var i = 0; i < numOfBlocs; i++) {
     //Create the mesh with the geometry + material
     var blocs = new THREE.Mesh(appleTreeTopGeo, appleTreeTopMat);
     //Set the position and rotation of each cube randomly
-    blocs.position.x = i * 15;
+    blocs.position.x = i * .5;
     blocs.position.y = Math.random() * 10;
     blocs.position.z = Math.random() * 10;
     blocs.rotation.z = Math.random() * Math.PI * 2;
     blocs.rotation.y = Math.random() * Math.PI * 2;
     //Set the size of the cube randomly
-    var size = .1 + Math.random() * .9;
+    var size = .7 + Math.random() * 2;
     blocs.scale.set(size, size, size);
 
     //Alow each cube to cast and receive shadows
     blocs.castShadow = true;
     blocs.receiveShadow = true;
-
     // Add the cube to the container we created at the beginning.
     this.mesh.add(blocs);
   }
 };
+///////////// DEFINE APPLE TREE //////////////
+var defineAppleTree = function defineAppleTree() {
+  this.mesh = new THREE.Object3D();
+  var appleTreeTrunkGeo = new THREE.BoxGeometry(2, 20, 2);
+  var appleTreeTrunkMat = new THREE.MeshStandardMaterial({ color: colours.brown02, flatShading: true });
+  var appleTreeTrunk = new THREE.Mesh(appleTreeTrunkGeo, appleTreeTrunkMat);
+  appleTreeTrunk.castShadow = true;
+  appleTreeTrunk.receiveShadow = true;
+  this.mesh.add(appleTreeTrunk);
 
-var defineAppleTree = function defineAppleTree() {};
+  var appleTreeTop = new defineAppleTreeTop();
+  // appleTreeTop.mesh.position.x = - 10;
+  // appleTreeTop.mesh.position.y = 5;
+  appleTreeTop.mesh.position.set(-10, 5, -5);
+  this.mesh.add(appleTreeTop.mesh);
+};
 
 /////////////////// CREATE RANDOM FUCKING TREES ///////////////////
 //
@@ -45325,7 +45339,7 @@ var defineAppleTree = function defineAppleTree() {};
 
 var trees = void 0;
 function createTrees() {
-  trees = new defineRoundTree();
+  trees = new defineAppleTree();
 
   trees.mesh.position.set(0, 305, 0);
   camera.lookAt(trees.mesh.position);
@@ -45410,14 +45424,12 @@ var handleWindowResize = function handleWindowResize() {
 };
 
 //////////////// ORBIT CONTROLS //////////
-function addOrbitControls() {}
-// controls = new OrbitControls(camera, renderer.domElement); //we want our camera that you want to change the position of, and the second argument is what you want to see.
-// controls.enableZoom = false;
-// controls.enableRotate = false;
-// console.log('orbitcontrols added', controls);
-// controls.update();
-// console.log('updated controls', controls);
-
+function addOrbitControls() {
+  controls = new _threeOrbitcontrols2.default(camera, renderer.domElement); //we want our camera that you want to change the position of, and the second argument is what you want to see.
+  console.log('orbitcontrols added', controls);
+  controls.update();
+  console.log('updated controls', controls);
+}
 
 ///// DOM BULLSHIT //////
 
@@ -45426,7 +45438,7 @@ window.addEventListener('load', init, false);
 
 ////// SCREEN RESIZE CALLBACK ///////
 window.addEventListener('resize', handleWindowResize, false);
-},{"../scss/index.scss":6,"../css/index.css":8,"three":10,"dat.gui":12,"three-orbitcontrols":14}],32:[function(require,module,exports) {
+},{"../scss/index.scss":6,"../css/index.css":8,"three":10,"dat.gui":12,"three-orbitcontrols":14}],23:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -45455,7 +45467,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '50083' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '54936' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -45596,5 +45608,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[32,4], null)
+},{}]},{},[23,4], null)
 //# sourceMappingURL=/js.b8953913.map

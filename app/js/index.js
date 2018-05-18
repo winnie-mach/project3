@@ -277,10 +277,11 @@ const defineRoundTree = function() {
 	this.mesh.add(roundTreeTop);
 }
 
-////////// DEFINE APPLE TREE ////////////
+////////// DEFINE APPLE TREETOP ////////////
 const defineAppleTreeTop = function() {
   // Create an empty container that will hold the blocks of the tree top
   this.mesh = new THREE.Object3D();
+	this.mesh.scale.set(1.5, 1.5, 1.5);
 
   //Create a cube geometry;
   //this shape will be duplicated to create the cloud
@@ -292,65 +293,46 @@ const defineAppleTreeTop = function() {
   })
 
   // Duplicate the geometry a random number of times
-  let numOfBlocs = 3+Math.floor(Math.random()*3);
+  let numOfBlocs = 30+Math.floor(Math.random()*3);
   //Loop to create duplicates
   for (let i = 0; i < numOfBlocs; i++){
     //Create the mesh with the geometry + material
     let blocs = new THREE.Mesh(appleTreeTopGeo, appleTreeTopMat);
     //Set the position and rotation of each cube randomly
-    blocs.position.x = i*15;
+    blocs.position.x = i*.5;
     blocs.position.y = Math.random()*10;
     blocs.position.z = Math.random()*10;
     blocs.rotation.z = Math.random()*Math.PI*2;
     blocs.rotation.y = Math.random()*Math.PI*2;
     //Set the size of the cube randomly
-    let size = .1 + Math.random()*.9;
+    let size = .7 + Math.random()*2;
     blocs.scale.set(size,size,size);
 
     //Alow each cube to cast and receive shadows
     blocs.castShadow = true;
     blocs.receiveShadow = true;
-
     // Add the cube to the container we created at the beginning.
     this.mesh.add(blocs);
   }
 }
+///////////// DEFINE APPLE TREE //////////////
+const defineAppleTree = function() {
+	this.mesh = new THREE.Object3D();
+	let appleTreeTrunkGeo = new THREE.BoxGeometry(2, 20, 2);
+	let appleTreeTrunkMat = new THREE.MeshStandardMaterial({color: colours.brown02, flatShading: true});
+	let appleTreeTrunk = new THREE.Mesh(appleTreeTrunkGeo, appleTreeTrunkMat);
+	appleTreeTrunk.castShadow = true;
+	appleTreeTrunk.receiveShadow = true;
+	this.mesh.add(appleTreeTrunk);
 
-// const defineAppleTree = function() {
-// 	this.mesh = new THREE.Object3D();
-// 	let appleTreeTrunk =
-// }
+	let appleTreeTop = new defineAppleTreeTop();
+	// appleTreeTop.mesh.position.x = - 10;
+	// appleTreeTop.mesh.position.y = 5;
+	appleTreeTop.mesh.position.set(-10, 5, -5);
+	this.mesh.add(appleTreeTop.mesh);
+}
 
-const defineSky = function() { //(global variable)
-  //Create an empty container
-  this.mesh = new THREE.Object3D();
-  //Choose a number of clouds to be scattered in the sky
-  this.numOfClouds = 20;
-  //To distribute the clouds consistently, need to place according to a uniform angle
-  let stepAngle = Math.PI*2 / this.numOfClouds;
 
-  //////////CREATE CLOUD INSTANCES INSIDE SKY OBJECT  //////////
-  for (let i = 0; i < this.numOfClouds; i++) {
-    let cloud = new defineCloud();
-    // Set the rotation and position of each cloud using some trigonometry
-    let a = stepAngle*i; //final angle of cloud group.
-    let h = 750 + Math.random()*200; //this is the distance between the centre of the axis and the cloud itself
-    //Trigonometry: Converting polar coordinates(angle, distance) into Cartesian coordinates(x, y)
-    cloud.mesh.position.y = Math.sin(a)*h;
-    cloud.mesh.position.x = Math.cos(a)*h;
-    //Rotate the cloud according to it's position
-    cloud.mesh.rotation.z = a + Math.PI/2;
-    //For a better result we position the clouds at random depths inside the scene using the z (depth) axis.
-    // cloud.mesh.position.z = - 400 - Math.random()*400;
-    cloud.mesh.position.z = - 600; // - 600
-    //Also setting a random scale for each cloud
-    let size = 1 + Math.random()*3;
-    cloud.mesh.scale.set(size,size,size);
-
-    //Finally, adding the cloud to the scene
-    this.mesh.add(cloud.mesh);
-  }
-};
 /////////////////// CREATE RANDOM FUCKING TREES ///////////////////
 //
 // const defineTreeGrp = function() {
@@ -362,7 +344,7 @@ const defineSky = function() { //(global variable)
 
 let trees;
 function createTrees() {
-	trees = new defineRoundTree();
+	trees = new defineAppleTree();
 
 
 	trees.mesh.position.set(0, 305, 0);
@@ -459,12 +441,10 @@ const handleWindowResize = () => {
 
 //////////////// ORBIT CONTROLS //////////
 function addOrbitControls() {
-   // controls = new OrbitControls(camera, renderer.domElement); //we want our camera that you want to change the position of, and the second argument is what you want to see.
-	 // controls.enableZoom = false;
-	 // controls.enableRotate = false;
-  // console.log('orbitcontrols added', controls);
-  // controls.update();
-  // console.log('updated controls', controls);
+   controls = new OrbitControls(camera, renderer.domElement); //we want our camera that you want to change the position of, and the second argument is what you want to see.
+  console.log('orbitcontrols added', controls);
+  controls.update();
+  console.log('updated controls', controls);
 }
 
 
