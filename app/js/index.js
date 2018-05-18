@@ -167,8 +167,9 @@ const defineCloud = function() {
   let geo = new THREE.IcosahedronGeometry(15); //30, 30, 30
 
   //Create a material; a simple white material
-  let mat = new THREE.MeshPhongMaterial({
+  let mat = new THREE.MeshStandardMaterial({
     color:colours.white02,
+		opacity: .5
   })
 
   // Duplicate the geometry a random number of times
@@ -400,17 +401,15 @@ function createTrees() {
 	scene.add(trees.mesh);
 }
 
-//TODO: Read rest of aviator tut, create hero, create trees, create rocks. Git and deploy.
-
 
 ////// DEFINE ROCK //////////////
 const defineRock = function () {
-	// this.mesh = new THREE.Object3D();
-	let rockGeo = new THREE.BoxGeometry(3, 3, 3);
-	let rockMat = new THREE.MeshStandardMaterial({color:colours.grey01, flatShading:true});
+	this.mesh = new THREE.Object3D();
+	let rockGeo = new THREE.BoxGeometry(30, 30, 30);
+	let rockMat = new THREE.MeshStandardMaterial({color:colours.green01, flatShading:true});
 	let numOfBlocs = Math.floor(Math.random()*3);
 	// Loop to create duplicates, 0-3 duplicates.
-	for (let i = 0; i < numOfBlocs; i++){
+	for (let i = 1; i < numOfBlocs; i++){
 	let blocs = new THREE.Mesh(rockGeo, rockMat);
 	//Set the position and rotation of each cube randomly
 	blocs.position.x = i*3;
@@ -423,20 +422,30 @@ const defineRock = function () {
 	blocs.scale.set(size,size,size);
 	blocs.castShadow = true;
 	blocs.receiveShadow = true;
-	blocs.position.y = 300;
+	// blocs.position.y = 300;
 	this.mesh.add(blocs);
 	}
 }
-//
-// function createRocks(){
-// 	numOfRocks = 30;
-// 	for (var i = 0; i < array.length; i++) {
-// 		array[i]
-// 	}
-// }
+
+let rocks;
+function createRocks(){
+	let numOfRocks = 100;
+	for (var i = 0; i < numOfRocks; i++) {
+		rocks = new defineRock();
+		let theta = Math.random(2*Math.PI);
+		let phi = Math.random(Math.PI);
+		rocks.mesh.position.x = 300 * Math.cos(theta)* Math.cos(phi);
+		rocks.mesh.position.y = 300 * Math.cos(theta)* Math.sin(phi);
+		rocks.mesh.position.z = 300 * Math.cos(theta);
+
+		console.log(rocks.mesh.position.x,rocks.mesh.position.y, rocks.mesh.position.z);
+			scene.add(rocks.mesh);
+	}
+
+}
 
 
-
+//TODO: Read rest of aviator tut, create hero, create trees, create rocks. Git and deploy.
 
 
 
@@ -461,10 +470,10 @@ function init() {  //add (event) afterwards
   createGround();
   createSky();
 	createTrees();
-	defineRock();
+	createRocks();
 
   /// FUCK ORBIT CONTROLS
-  // addOrbitControls();
+  addOrbitControls();
 
 
   // //Add MouseMove Event Listener
@@ -481,6 +490,7 @@ function loop() {
   //Rotate the propeller, sea and the sky
   // sea.mesh.rotation.z += .005;
   // sky.mesh.rotation.z += .01;
+
   //
   // //Update the plane on each frame
   // updatePlane();
