@@ -98,7 +98,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   // Override the current require with this new one
   return newRequire;
-})({19:[function(require,module,exports) {
+})({21:[function(require,module,exports) {
 var bundleURL = null;
 function getBundleURLCached() {
   if (!bundleURL) {
@@ -128,7 +128,7 @@ function getBaseURL(url) {
 
 exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
-},{}],17:[function(require,module,exports) {
+},{}],19:[function(require,module,exports) {
 var bundle = require('./bundle-url');
 
 function updateLink(link) {
@@ -159,19 +159,19 @@ function reloadCSS() {
 }
 
 module.exports = reloadCSS;
-},{"./bundle-url":19}],6:[function(require,module,exports) {
+},{"./bundle-url":21}],6:[function(require,module,exports) {
 
         var reloadCSS = require('_css_loader');
         module.hot.dispose(reloadCSS);
         module.hot.accept(reloadCSS);
       
-},{"_css_loader":17}],8:[function(require,module,exports) {
+},{"_css_loader":19}],8:[function(require,module,exports) {
 
         var reloadCSS = require('_css_loader');
         module.hot.dispose(reloadCSS);
         module.hot.accept(reloadCSS);
       
-},{"_css_loader":17}],10:[function(require,module,exports) {
+},{"_css_loader":19}],12:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -41440,7 +41440,7 @@ exports.Projector = Projector;
 exports.CanvasRenderer = CanvasRenderer;
 exports.SceneUtils = SceneUtils;
 exports.LensFlare = LensFlare;
-},{}],12:[function(require,module,exports) {
+},{}],14:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -43925,7 +43925,7 @@ exports.gui = gui;
 exports.GUI = GUI$1;
 exports.default = index;
 //# sourceMappingURL=dat.gui.module.js.map
-},{}],14:[function(require,module,exports) {
+},{}],16:[function(require,module,exports) {
 var THREE = require('three')
 
 /**
@@ -44974,7 +44974,7 @@ Object.defineProperties( THREE.OrbitControls.prototype, {
 
 module.exports = exports.default = THREE.OrbitControls
 
-},{"three":10}],4:[function(require,module,exports) {
+},{"three":12}],4:[function(require,module,exports) {
 'use strict';
 
 require('../scss/index.scss');
@@ -45044,11 +45044,9 @@ var createScene = function createScene() {
 
   // Add a fog effect to the scene, same colour as the background colour used in stylesheet
   // scene.fog = new THREE.Fog(colours.blue03, 1, 1000);
-  console.log(scene.fog);
+  // console.log(scene.fog);
 
   // Create the CAMERA
-  // 	 camera = new THREE.OrthographicCamera( WIDTH / - 2, WIDTH / 2, HEIGHT / 2, HEIGHT / - 2, 1, 1000 );
-  // scene.add( camera );
   aspectRatio = WIDTH / HEIGHT; //set up aspect ratio with WIDTH + HEIGHT
   fieldOfView = 60;
   nearPlane = 0.1;
@@ -45106,7 +45104,7 @@ var createLights = function createLights() {
   shadowLight.rotation.set(0, 0, 0);
   //Allow directional light to cast shadows
   shadowLight.castShadow = true;
-  shadowLight.shadowCameraVisible = true;
+  // shadowLight.shadowCameraVisible = true;
   //Define the visible area of the projected shadow
   shadowLight.shadow.camera.left = -400;
   shadowLight.shadow.camera.right = 400;
@@ -45119,7 +45117,7 @@ var createLights = function createLights() {
   shadowLight.shadow.mapSize.height = 2048;
 
   // To activate the lights, just add them to the scene
-  scene.add(hemisphereLight);
+  // scene.add(hemisphereLight);
   scene.add(shadowLight);
 };
 
@@ -45128,7 +45126,17 @@ var createLights = function createLights() {
 var defineGround = function defineGround() {
   //(global variable)
   var geo = new THREE.SphereGeometry(300, 30, 30);
-  var mat = new THREE.MeshStandardMaterial({ color: colours.orange02, flatShading: true });
+
+  var grassTexture = new THREE.TextureLoader().load('http://1.bp.blogspot.com/-F3hwCmB9gXI/T1b0oZqJ9rI/AAAAAAAAAVI/YQpuOOtFbmI/s1600/grass+4.jpg');
+  grassTexture.repeat.set(10, 10);
+  grassTexture.wrapS = grassTexture.wrapT = THREE.RepeatWrapping;
+  grassTexture.anisotropy = 16;
+  // grassTexture.needsUpdate = true;
+
+  var mat = new THREE.MeshStandardMaterial({
+    flatShading: true,
+    map: grassTexture
+  });
   // important: by merging vertices we ensure the continuity of the waves
   // geo.mergeVertices();
   //
@@ -45158,21 +45166,6 @@ var defineGround = function defineGround() {
   this.mesh.receiveShadow = true;
   this.mesh.castShadow = false;
   this.mesh.rotation.z = -Math.PI / 2;
-};
-
-////////// CREATING AN INSTANCE OF GROUND /////////////
-// Instantiate the ground and add it to the scene:
-var ground = void 0; //(global variable)
-
-var createGround = function createGround() {
-  ground = new defineGround();
-  //Push it a little bit at the bottom of the scene
-  console.log('ground:', ground);
-  // debugger;
-  ground.mesh.position.y = 0; // -150
-  ground.mesh.position.z = 0; //150
-  // Add the mesh of the sea to the scene
-  scene.add(ground.mesh);
 };
 
 //////// DEFINING A CLOUD //////////
@@ -45247,18 +45240,6 @@ var defineSky = function defineSky() {
     //Finally, adding the cloud to the scene
     this.mesh.add(cloud.mesh);
   }
-};
-
-//////// CREATE AN INSTANCE OF THE SKY ///////////
-
-var sky = void 0; //(global variable)
-function createSky() {
-  sky = new defineSky();
-  //Push its centre a bit towards the bottom of the screen
-  sky.mesh.position.y = -500; // - 300
-  // TODO: sky will be moving towards user as they move on the z axis.
-  // sky.mesh.position.z = 300;
-  scene.add(sky.mesh);
 };
 
 ////////////// TREE 1: DEFINE PINE TREE /////////////////
@@ -45405,18 +45386,6 @@ var defineSpottyTree = function defineSpottyTree() {
   this.mesh.add(spottyTreeTop.mesh);
 };
 
-/////////////////// CREATE RANDOM FUCKING TREES ///////////////////
-
-var trees = void 0;
-function createTrees() {
-  trees = new defineSpottyTree();
-
-  trees.mesh.position.set(0, 305, 0);
-  camera.lookAt(trees.mesh.position);
-  // console.log(trees.mesh.position);
-  scene.add(trees.mesh);
-}
-
 ////// DEFINE ROCK //////////////
 var defineRock = function defineRock() {
   this.mesh = new THREE.Object3D();
@@ -45442,8 +45411,39 @@ var defineRock = function defineRock() {
   }
 };
 
-var rocks = void 0;
-function createRocks() {
+//////// DEFINE WORLD //////////
+var ground = void 0,
+    sky = void 0,
+    trees = void 0,
+    rocks = void 0; //(global variable)
+
+var defineWorld = function defineWorld() {
+  this.mesh = new THREE.Object3D();
+  ////////// CREATING AN INSTANCE OF GROUND /////////////
+  ground = new defineGround();
+  //Push it a little bit at the bottom of the scene
+  console.log('ground:', ground);
+  // debugger;
+  ground.mesh.position.y = 0; // -150
+  ground.mesh.position.z = 0; //150
+  // Add the mesh of the sea to the scene
+  this.mesh.add(ground.mesh);
+
+  //////// CREATE AN INSTANCE OF THE SKY ///////////
+  sky = new defineSky();
+  //Push its centre a bit towards the bottom of the screen
+  sky.mesh.position.y = -500; // - 300
+  // TODO: sky will be moving towards user as they move on the z axis.
+  // sky.mesh.position.z = 300;
+  this.mesh.add(sky.mesh);
+
+  /////////////////// CREATE RANDOM FUCKING TREES ///////////////////
+  trees = new defineSpottyTree();
+  trees.mesh.position.set(0, 305, 0);
+  camera.lookAt(trees.mesh.position);
+  this.mesh.add(trees.mesh);
+
+  ///// CREATE RANDOM ROCKS //////
   var numOfRocks = 100;
   for (var i = 0; i < numOfRocks; i++) {
     rocks = new defineRock();
@@ -45454,11 +45454,17 @@ function createRocks() {
     rocks.mesh.position.z = 300 * Math.cos(theta);
 
     console.log(rocks.mesh.position.x, rocks.mesh.position.y, rocks.mesh.position.z);
-    scene.add(rocks.mesh);
+    this.mesh.add(rocks.mesh);
   }
-}
+};
 
-//TODO: Read rest of aviator tut, create hero, create trees, create rocks. Git and deploy.
+/////// CREATING THE ENTIRE WORLD //////////////
+var world = void 0;
+function createWorld() {
+  world = new defineWorld();
+  scene.add(world.mesh);
+}
+//TODO: Read rest of aviator tut, create mountains, create skybox.
 
 
 ////////// INIT FUNCTION !!!!!!! ////////
@@ -45471,13 +45477,11 @@ function init() {
   createLights();
 
   //Add Objects
-  createGround();
-  createSky();
-  createTrees();
-  createRocks();
+  createWorld();
 
   /// FUCK ORBIT CONTROLS
-  addHelpers();
+  // addHelpers();
+
 
   // //Add MouseMove Event Listener
   // document.addEventListener('mousemove', handleMouseMove, false);
@@ -45491,19 +45495,11 @@ function init() {
 
 function loop() {
   //Rotate the ground and the sky
-  // ground.mesh.rotation.x += .005;
-  // sky.mesh.rotation.x += .01;
-  // trees.mesh.rotation.x += .1;
+  // world.mesh.rotation.x += 0.01;
 
-  //
-  // //Update the plane on each frame
-  // updatePlane();
 
   //Render the scene (+ its contents) and the camera. Need to rerender every time the animation changes.
   renderer.render(scene, camera);
-  // console.log(camera.position);
-  // console.log(camera.rotation);
-  // console.log(camera.zoom);
 
   //Call the loop function again.
   requestAnimationFrame(loop);
@@ -45539,7 +45535,7 @@ function addHelpers() {
   scene.add(axes);
 
   //4. Bounding Box Helper
-  var bboxHelper = new THREE.BoundingBoxHelper(scene, 0x999999); //first argument is what you want bounding box to be around
+  var bboxHelper = new THREE.BoxHelper(scene, 0x999999); //first argument is what you want bounding box to be around
   scene.add(bboxHelper);
   bboxHelper.update();
 
@@ -45576,18 +45572,11 @@ window.addEventListener('load', init, false);
 window.addEventListener('resize', handleWindowResize, false);
 
 ///// TRYING TO LOAD SOME OBJ SHIT ////
-// let manager = new THREE.LoadingManager();
-// 			manager.onProgress = function ( item, loaded, total ) {
-// 				console.log( item, loaded, total );
-// 			};
-//
-// let loader = new THREE.ObjectLoader(manager);
-// loader.load(
-// 	'../models/tree.obj',
-// 	function(object){
-// 		scene.add(object)
-// 	})
-},{"../scss/index.scss":6,"../css/index.css":8,"three":10,"dat.gui":12,"three-orbitcontrols":14}],23:[function(require,module,exports) {
+var loader = new THREE.ObjectLoader();
+loader.load('tree.obj', function (object) {
+  scene.add(object);
+});
+},{"../scss/index.scss":6,"../css/index.css":8,"three":12,"dat.gui":14,"three-orbitcontrols":16}],23:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -45616,7 +45605,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '57472' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '57102' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
