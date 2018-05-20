@@ -10,7 +10,9 @@
   },
   "devDependencies": {},
   "scripts": {
-    "dev":"parcel app/html/index.html --no-cache"
+    "dev":"parcel app/html/index.html --no-cache",
+    "parcelbuild": "parcel build app/html/index.html --public-url https://winnie-mach.github.io/project3/",
+    "ghpages": "git subtree push --prefix dist origin gh-pages"
   },
   "keywords": [],
   "author": "",

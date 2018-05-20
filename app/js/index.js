@@ -83,11 +83,6 @@ renderer.setSize(WIDTH, HEIGHT);
 renderer.setPixelRatio(window.devicePixelRation ||  1); //setting it to the pixel ratio settings of your pc or 1 if it's not defined.
 renderer.shadowMap.enabled = true;
 
-///// ADDING AXIS GIZMO ///////////
-let axes = new THREE.AxesHelper(200);
-console.log('axes:', axes);
-scene.add(axes);
-
 // Add the DOM element of the renderer to the container we created in the HTML.
 container = document.getElementById('world');
 container.appendChild(renderer.domElement);
@@ -108,9 +103,11 @@ const createLights = () => {
   //Acts like the sun, means all the rays produced are parallel.
   shadowLight = new THREE.DirectionalLight(0xffffff, .9);
   //Set the direction of the direcitonal light
-  shadowLight.position.set(150, 350, 350);
+  shadowLight.position.set(150, 500, 250); //150, 350, 350
+	shadowLight.rotation.set(0, 0, 0)
   //Allow directional light to cast shadows
   shadowLight.castShadow = true;
+	shadowLight.shadowCameraVisible = true;
   //Define the visible area of the projected shadow
   shadowLight.shadow.camera.left = - 400;
   shadowLight.shadow.camera.right = 400;
@@ -133,6 +130,30 @@ const createLights = () => {
 const defineGround = function() { //(global variable)
   	let geo = new THREE.SphereGeometry(300, 30, 30);
   	var mat = new THREE.MeshStandardMaterial( { color: colours.orange02,flatShading: true} )
+		// important: by merging vertices we ensure the continuity of the waves
+		// geo.mergeVertices();
+		//
+		// // get the vertices
+		// let allVerts = geo.vertices.length;
+		//
+		// // create an array to store new data associated to each vertex
+		// this.waves = [];
+		//
+		// for (let i=0; i<allVerts; i++){
+		// // get each vertex
+		// let vert = geom.vertices[i];
+		//
+		// // store some data associated to it
+		// this.waves.push({y:vert.y,
+		// 								 x:vert.x,
+		// 								 z:vert.z,
+		// 								 // a random angle
+		// 								 ang:Math.random()*Math.PI*2,
+		// 								 // a random distance
+		// 								 amp:5 + Math.random()*15,
+		// 								 // a random speed between 0.016 and 0.048 radians / frame
+		// 								 speed:0.016 + Math.random()*0.032
+		// 								});
 
   this.mesh = new THREE.Mesh( geo, mat );
   	this.mesh.receiveShadow = true;
@@ -405,7 +426,7 @@ function createTrees() {
 ////// DEFINE ROCK //////////////
 const defineRock = function () {
 	this.mesh = new THREE.Object3D();
-	let rockGeo = new THREE.BoxGeometry(30, 30, 30);
+	let rockGeo = new THREE.BoxGeometry(3, 3, 3);
 	let rockMat = new THREE.MeshStandardMaterial({color:colours.green01, flatShading:true});
 	let numOfBlocs = Math.floor(Math.random()*3);
 	// Loop to create duplicates, 0-3 duplicates.
@@ -473,7 +494,7 @@ function init() {  //add (event) afterwards
 	createRocks();
 
   /// FUCK ORBIT CONTROLS
-  addOrbitControls();
+  addHelpers();
 
 
   // //Add MouseMove Event Listener
@@ -487,9 +508,10 @@ function init() {  //add (event) afterwards
 ///////// LOOP ANIMATION ////////////
 
 function loop() {
-  //Rotate the propeller, sea and the sky
-  // sea.mesh.rotation.z += .005;
-  // sky.mesh.rotation.z += .01;
+  //Rotate the ground and the sky
+  // ground.mesh.rotation.x += .005;
+  // sky.mesh.rotation.x += .01;
+	// trees.mesh.rotation.x += .1;
 
   //
   // //Update the plane on each frame
@@ -519,11 +541,50 @@ const handleWindowResize = () => {
 }
 
 //////////////// ORBIT CONTROLS //////////
-function addOrbitControls() {
+function addHelpers() {
+		// 1.Orbit Controls
    controls = new OrbitControls(camera, renderer.domElement); //we want our camera that you want to change the position of, and the second argument is what you want to see.
-  console.log('orbitcontrols added', controls);
-  controls.update();
-  console.log('updated controls', controls);
+	 controls.update();
+
+	 // 2. ArrowHelper
+	 let directionV3 = new THREE.Vector3(1, 0, 1);
+	 let originV3 = new THREE.Vector3(0, 200, 0);
+	 let arrowHelper = new THREE.ArrowHelper(directionV3, 	originV3, 100, 0xff0000, 20, 10); // 100 is length, 20 	and 10 are head length and width
+	 scene.add(arrowHelper);
+
+	 //3. Axis Helper
+	 let axes = new THREE.AxesHelper(200);
+	 console.log('axes:', axes);
+	 scene.add(axes);
+
+	 //4. Bounding Box Helper
+	 let bboxHelper = new THREE.BoundingBoxHelper(scene, 0x999999); //first argument is what you want bounding box to be around
+	 scene.add(bboxHelper);
+	 bboxHelper.update();
+
+	 //5. Camera Helper
+	 let cameraParObj = new THREE.Object3D();
+	 cameraParObj.position.y = 200;
+	 cameraParObj.position.z = 700;
+	 scene.add(cameraParObj);
+	 cameraParObj.add(camera); //passing in my camera
+	 let cameraHelper = new THREE.CameraHelper(camera); //passing in my camera
+	 scene.add(cameraHelper);
+	 cameraHelper.update();
+
+	 //6. DirectionalLight Helper
+	 let dlightHelper = new THREE.DirectionalLightHelper(shadowLight, 50); // 50 is helper size, shadowLight is my directional light
+	 scene.add(dlightHelper);
+	 dlightHelper.update();
+
+	 //7. HemisphereLight Helper
+	 var hlightHelper = new THREE.HemisphereLightHelper(hemisphereLight, 50, 300); // 50 is sphere size, 300 is arrow length, hemisphereLight is my light I've passed in.
+	 scene.add(hlightHelper);
+
+	 //8. Grid Helper
+	 let gridHelper = new THREE.GridHelper(1000, 40, colours.red01); // 500 is grid size, 20 is grid step
+	 scene.add(gridHelper);
+
 }
 
 
@@ -534,8 +595,6 @@ function addOrbitControls() {
 
   ////// SCREEN RESIZE CALLBACK ///////
   window.addEventListener('resize', handleWindowResize, false);
-
-
 
 	///// TRYING TO LOAD SOME OBJ SHIT ////
 	// let manager = new THREE.LoadingManager();
