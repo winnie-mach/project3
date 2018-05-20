@@ -1,4 +1,3 @@
-import '../scss/index.scss';
 import '../css/index.css';
 import * as THREE from "three";
 import dat from "dat.gui"; //a library that is a controller so you can tumble, pan etc.
