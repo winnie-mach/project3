@@ -2,6 +2,10 @@ import '../css/index.css';
 import * as THREE from "three";
 import dat from "dat.gui"; //a library that is a controller so you can tumble, pan etc.
 import OrbitControls from "three-orbitcontrols";
+// import imageURL from './grassDiff.jpg';
+import grassDiff from '../textures/grassDiff.jpg';
+import skydomeTexture from '../textures/daytonight.png'
+const treeGeo = require('../models/tree.obj');
 
 
 const colours = {  //global variables
@@ -47,7 +51,7 @@ const createScene = () => {
   aspectRatio = WIDTH / HEIGHT; //set up aspect ratio with WIDTH + HEIGHT
   fieldOfView = 60;
   nearPlane = 0.1;
-  farPlane = 10000;
+  farPlane = 100000;
 
   camera = new THREE.PerspectiveCamera(
     fieldOfView,
@@ -55,16 +59,9 @@ const createScene = () => {
     nearPlane,
     farPlane
   );
-  //Set camera position
-// camera.position.x = 0;
-// camera.position.y = 583; //150
-// camera.position.z = 1722; //200
-// camera.position.set(-1.967815596819599, 540.7557260060261, 318.5893451250931)
 camera.position.x = 0;
 camera.position.y = 325;
 camera.position.z = 400;
-// camera.rotation.set(-0.6435011087932843,  0,  0)
-// camera.lookAt(scene.position);
 camera.lookAt({x: 0, y: 100.00000000000001, z: 450})
 camera.setFocalLength(70); // default at 35
 
@@ -118,7 +115,7 @@ const createLights = () => {
   shadowLight.shadow.mapSize.height = 2048;
 
   // To activate the lights, just add them to the scene
-  // scene.add(hemisphereLight);
+  scene.add(hemisphereLight);
   scene.add(shadowLight);
 
 }
@@ -129,11 +126,11 @@ const createLights = () => {
 const defineGround = function() { //(global variable)
   	let geo = new THREE.SphereGeometry(300, 30, 30);
 
-		let grassTexture = new THREE.TextureLoader().load('http://1.bp.blogspot.com/-F3hwCmB9gXI/T1b0oZqJ9rI/AAAAAAAAAVI/YQpuOOtFbmI/s1600/grass+4.jpg')
-		grassTexture.repeat.set(10,10)
+		let grassTexture = new THREE.TextureLoader().load(grassDiff);
+		grassTexture.repeat.set(100,100)
 		grassTexture.wrapS = grassTexture.wrapT = THREE.RepeatWrapping;
 		grassTexture.anisotropy = 16;
-		// grassTexture.needsUpdate = true;
+		grassTexture.needsUpdate = true;
 
   	let mat = new THREE.MeshStandardMaterial( {
 			flatShading: true,
@@ -417,15 +414,35 @@ const defineRock = function () {
 }
 
 //////// DEFINE WORLD //////////
-let ground, sky, trees, rocks; //(global variable)
+let world, skybox, ground, sky, trees, rocks; //(global variable)
 
 const defineWorld = function(){
 	this.mesh = new THREE.Object3D();
+
+///////////// CREATE A SKYBOX //////////////
+
+    // prepare ShaderMaterial
+    var uniforms = {
+        texture: { type: 't', value: THREE.ImageUtils.loadTexture(skydomeTexture) }
+    };
+    var skyMaterial = new THREE.ShaderMaterial( {
+        uniforms: uniforms,
+        vertexShader: document.getElementById('sky-vertex').textContent, fragmentShader: document.getElementById('sky-fragment').textContent,
+				side: THREE.BackSide
+    });
+    // create Mesh with sphere geometry and add to the scene
+    var skyBox = new THREE.Mesh(new THREE.SphereGeometry(5000, 60, 40), skyMaterial);
+    skyBox.scale.set(-1, 1, 1);
+    skyBox.rotation.order = 'XZY';
+    skyBox.renderDepth = 500.0;
+    this.mesh.add(skyBox);
+		console.log('SKYBOX', skyBox);
+
+
+
+
 ////////// CREATING AN INSTANCE OF GROUND /////////////
 	ground = new defineGround();
-	//Push it a little bit at the bottom of the scene
-	console.log('ground:', ground);
-	// debugger;
 	ground.mesh.position.y= 0; // -150
 	ground.mesh.position.z= 0; //150
 	// Add the mesh of the sea to the scene
@@ -458,18 +475,19 @@ const defineWorld = function(){
 		rocks.mesh.position.y = 300 * Math.cos(theta)* Math.sin(phi);
 		rocks.mesh.position.z = 300 * Math.cos(theta);
 
-		console.log(rocks.mesh.position.x,rocks.mesh.position.y, rocks.mesh.position.z);
+		// console.log(rocks.mesh.position.x,rocks.mesh.position.y, rocks.mesh.position.z);
 			this.mesh.add(rocks.mesh);
 	}
 }
 
 /////// CREATING THE ENTIRE WORLD //////////////
-let world;
+
 function createWorld () {
 	world = new defineWorld();
 	scene.add(world.mesh);
 }
-//TODO: Read rest of aviator tut, create mountains, create skybox.
+//TODO: Read rest of aviator tut, create mountains.
+
 
 
 
@@ -490,12 +508,12 @@ function init() {  //add (event) afterwards
   //Add Lights
   createLights();
 
-  //Add Objects
+	//Add World: skybox, ground, clouds, trees, rocks
 	createWorld();
 
 
   /// FUCK ORBIT CONTROLS
-  // addHelpers();
+  addHelpers();
 
 
   // //Add MouseMove Event Listener
@@ -504,6 +522,7 @@ function init() {  //add (event) afterwards
   //Start a loop that will update the objects' positions
   //And render the scene on each frame
   loop();
+
 }
 
 ///////// LOOP ANIMATION ////////////
@@ -586,14 +605,13 @@ function addHelpers() {
 
   ////// INIT CALLBACK FUNCTION ON LOAD /////////
   window.addEventListener('load', init, false);
-
   ////// SCREEN RESIZE CALLBACK ///////
   window.addEventListener('resize', handleWindowResize, false);
 
 	///// TRYING TO LOAD SOME OBJ SHIT ////
-	let loader = new THREE.ObjectLoader();
-	loader.load(
-		'tree.obj',
-		function(object){
-			scene.add(object)
-		})
+	// let loader = new THREE.OBJLoader();
+	// loader.load(
+	// 	treeGeo,
+	// 	function(object){
+	// 		scene.add(object)
+	// 	})

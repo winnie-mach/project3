@@ -1,17 +1,6 @@
 * {
   box-sizing: border-box;
   padding: 0;
-  margin: 0; }
-
-#world {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: linear-gradient(#97b5e6, #b8ccd7); }
-* {
-  box-sizing: border-box;
-  padding: 0;
   margin: 0;
 }
 
