@@ -98,7 +98,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   // Override the current require with this new one
   return newRequire;
-})({21:[function(require,module,exports) {
+})({32:[function(require,module,exports) {
 var bundleURL = null;
 function getBundleURLCached() {
   if (!bundleURL) {
@@ -128,7 +128,7 @@ function getBaseURL(url) {
 
 exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
-},{}],19:[function(require,module,exports) {
+},{}],30:[function(require,module,exports) {
 var bundle = require('./bundle-url');
 
 function updateLink(link) {
@@ -159,19 +159,13 @@ function reloadCSS() {
 }
 
 module.exports = reloadCSS;
-},{"./bundle-url":21}],6:[function(require,module,exports) {
+},{"./bundle-url":32}],6:[function(require,module,exports) {
 
         var reloadCSS = require('_css_loader');
         module.hot.dispose(reloadCSS);
         module.hot.accept(reloadCSS);
       
-},{"_css_loader":19}],8:[function(require,module,exports) {
-
-        var reloadCSS = require('_css_loader');
-        module.hot.dispose(reloadCSS);
-        module.hot.accept(reloadCSS);
-      
-},{"_css_loader":19}],12:[function(require,module,exports) {
+},{"_css_loader":30}],24:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -41440,7 +41434,7 @@ exports.Projector = Projector;
 exports.CanvasRenderer = CanvasRenderer;
 exports.SceneUtils = SceneUtils;
 exports.LensFlare = LensFlare;
-},{}],14:[function(require,module,exports) {
+},{}],26:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -43925,7 +43919,7 @@ exports.gui = gui;
 exports.GUI = GUI$1;
 exports.default = index;
 //# sourceMappingURL=dat.gui.module.js.map
-},{}],16:[function(require,module,exports) {
+},{}],28:[function(require,module,exports) {
 var THREE = require('three')
 
 /**
@@ -44974,28 +44968,44 @@ Object.defineProperties( THREE.OrbitControls.prototype, {
 
 module.exports = exports.default = THREE.OrbitControls
 
-},{"three":12}],4:[function(require,module,exports) {
-'use strict';
+},{"three":24}],8:[function(require,module,exports) {
+module.exports="/grassDiff.1af51741.jpg";
+},{}],46:[function(require,module,exports) {
+module.exports="/daytonight.b5d88c13.png";
+},{}],22:[function(require,module,exports) {
+module.exports="/tree.1356fb6c.obj";
+},{}],4:[function(require,module,exports) {
+"use strict";
 
-require('../scss/index.scss');
+require("../css/index.css");
 
-require('../css/index.css');
-
-var _three = require('three');
+var _three = require("three");
 
 var THREE = _interopRequireWildcard(_three);
 
-var _dat = require('dat.gui');
+var _dat = require("dat.gui");
 
 var _dat2 = _interopRequireDefault(_dat);
 
-var _threeOrbitcontrols = require('three-orbitcontrols');
+var _threeOrbitcontrols = require("three-orbitcontrols");
 
 var _threeOrbitcontrols2 = _interopRequireDefault(_threeOrbitcontrols);
+
+var _grassDiff = require("../textures/grassDiff.jpg");
+
+var _grassDiff2 = _interopRequireDefault(_grassDiff);
+
+var _daytonight = require("../textures/daytonight.png");
+
+var _daytonight2 = _interopRequireDefault(_daytonight);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+// import imageURL from './grassDiff.jpg';
+var treeGeo = require('../models/tree.obj'); //a library that is a controller so you can tumble, pan etc.
+
 
 var colours = { //global variables
   blue01: 0x97b5e6,
@@ -45014,8 +45024,7 @@ var colours = { //global variables
   white02: 0xffdecf,
   grey01: 0x9d8c72,
   grey02: 0x9a9693
-}; //a library that is a controller so you can tumble, pan etc.
-
+};
 
 var scene = void 0,
     camera = void 0,
@@ -45050,19 +45059,12 @@ var createScene = function createScene() {
   aspectRatio = WIDTH / HEIGHT; //set up aspect ratio with WIDTH + HEIGHT
   fieldOfView = 60;
   nearPlane = 0.1;
-  farPlane = 10000;
+  farPlane = 100000;
 
   camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
-  //Set camera position
-  // camera.position.x = 0;
-  // camera.position.y = 583; //150
-  // camera.position.z = 1722; //200
-  // camera.position.set(-1.967815596819599, 540.7557260060261, 318.5893451250931)
   camera.position.x = 0;
   camera.position.y = 325;
   camera.position.z = 400;
-  // camera.rotation.set(-0.6435011087932843,  0,  0)
-  // camera.lookAt(scene.position);
   camera.lookAt({ x: 0, y: 100.00000000000001, z: 450 });
   camera.setFocalLength(70); // default at 35
 
@@ -45117,7 +45119,7 @@ var createLights = function createLights() {
   shadowLight.shadow.mapSize.height = 2048;
 
   // To activate the lights, just add them to the scene
-  // scene.add(hemisphereLight);
+  scene.add(hemisphereLight);
   scene.add(shadowLight);
 };
 
@@ -45127,8 +45129,8 @@ var defineGround = function defineGround() {
   //(global variable)
   var geo = new THREE.SphereGeometry(300, 30, 30);
 
-  var grassTexture = new THREE.TextureLoader().load('http://1.bp.blogspot.com/-F3hwCmB9gXI/T1b0oZqJ9rI/AAAAAAAAAVI/YQpuOOtFbmI/s1600/grass+4.jpg');
-  grassTexture.repeat.set(10, 10);
+  var grassTexture = new THREE.TextureLoader().load(_grassDiff2.default);
+  grassTexture.repeat.set(100, 100);
   grassTexture.wrapS = grassTexture.wrapT = THREE.RepeatWrapping;
   grassTexture.anisotropy = 16;
   // grassTexture.needsUpdate = true;
@@ -45412,18 +45414,37 @@ var defineRock = function defineRock() {
 };
 
 //////// DEFINE WORLD //////////
-var ground = void 0,
+var world = void 0,
+    skybox = void 0,
+    ground = void 0,
     sky = void 0,
     trees = void 0,
     rocks = void 0; //(global variable)
 
 var defineWorld = function defineWorld() {
   this.mesh = new THREE.Object3D();
+
+  ///////////// CREATE A SKYBOX //////////////
+
+  // prepare ShaderMaterial
+  var uniforms = {
+    texture: { type: 't', value: THREE.ImageUtils.loadTexture(_daytonight2.default) }
+  };
+  var skyMaterial = new THREE.ShaderMaterial({
+    uniforms: uniforms,
+    vertexShader: document.getElementById('sky-vertex').textContent, fragmentShader: document.getElementById('sky-fragment').textContent,
+    side: THREE.BackSide
+  });
+  // create Mesh with sphere geometry and add to the scene
+  var skyBox = new THREE.Mesh(new THREE.SphereGeometry(5000, 60, 40), skyMaterial);
+  skyBox.scale.set(-1, 1, 1);
+  skyBox.rotation.order = 'XZY';
+  skyBox.renderDepth = 500.0;
+  this.mesh.add(skyBox);
+  console.log('SKYBOX', skyBox);
+
   ////////// CREATING AN INSTANCE OF GROUND /////////////
   ground = new defineGround();
-  //Push it a little bit at the bottom of the scene
-  console.log('ground:', ground);
-  // debugger;
   ground.mesh.position.y = 0; // -150
   ground.mesh.position.z = 0; //150
   // Add the mesh of the sea to the scene
@@ -45453,18 +45474,18 @@ var defineWorld = function defineWorld() {
     rocks.mesh.position.y = 300 * Math.cos(theta) * Math.sin(phi);
     rocks.mesh.position.z = 300 * Math.cos(theta);
 
-    console.log(rocks.mesh.position.x, rocks.mesh.position.y, rocks.mesh.position.z);
+    // console.log(rocks.mesh.position.x,rocks.mesh.position.y, rocks.mesh.position.z);
     this.mesh.add(rocks.mesh);
   }
 };
 
 /////// CREATING THE ENTIRE WORLD //////////////
-var world = void 0;
+
 function createWorld() {
   world = new defineWorld();
   scene.add(world.mesh);
 }
-//TODO: Read rest of aviator tut, create mountains, create skybox.
+//TODO: Read rest of aviator tut, create mountains.
 
 
 ////////// INIT FUNCTION !!!!!!! ////////
@@ -45476,12 +45497,11 @@ function init() {
   //Add Lights
   createLights();
 
-  //Add Objects
+  //Add World: skybox, ground, clouds, trees, rocks
   createWorld();
 
   /// FUCK ORBIT CONTROLS
-  // addHelpers();
-
+  addHelpers();
 
   // //Add MouseMove Event Listener
   // document.addEventListener('mousemove', handleMouseMove, false);
@@ -45567,16 +45587,17 @@ function addHelpers() {
 
 ////// INIT CALLBACK FUNCTION ON LOAD /////////
 window.addEventListener('load', init, false);
-
 ////// SCREEN RESIZE CALLBACK ///////
 window.addEventListener('resize', handleWindowResize, false);
 
 ///// TRYING TO LOAD SOME OBJ SHIT ////
-var loader = new THREE.ObjectLoader();
-loader.load('tree.obj', function (object) {
-  scene.add(object);
-});
-},{"../scss/index.scss":6,"../css/index.css":8,"three":12,"dat.gui":14,"three-orbitcontrols":16}],23:[function(require,module,exports) {
+// let loader = new THREE.OBJLoader();
+// loader.load(
+// 	treeGeo,
+// 	function(object){
+// 		scene.add(object)
+// 	})
+},{"../css/index.css":6,"three":24,"dat.gui":26,"three-orbitcontrols":28,"../textures/grassDiff.jpg":8,"../textures/daytonight.png":46,"../models/tree.obj":22}],45:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -45605,7 +45626,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '57102' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '61892' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -45746,5 +45767,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[23,4], null)
+},{}]},{},[45,4], null)
 //# sourceMappingURL=/js.b8953913.map
