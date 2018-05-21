@@ -98,7 +98,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   // Override the current require with this new one
   return newRequire;
-})({32:[function(require,module,exports) {
+})({26:[function(require,module,exports) {
 var bundleURL = null;
 function getBundleURLCached() {
   if (!bundleURL) {
@@ -128,7 +128,7 @@ function getBaseURL(url) {
 
 exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
-},{}],30:[function(require,module,exports) {
+},{}],24:[function(require,module,exports) {
 var bundle = require('./bundle-url');
 
 function updateLink(link) {
@@ -159,13 +159,13 @@ function reloadCSS() {
 }
 
 module.exports = reloadCSS;
-},{"./bundle-url":32}],6:[function(require,module,exports) {
+},{"./bundle-url":26}],6:[function(require,module,exports) {
 
         var reloadCSS = require('_css_loader');
         module.hot.dispose(reloadCSS);
         module.hot.accept(reloadCSS);
       
-},{"_css_loader":30}],24:[function(require,module,exports) {
+},{"_css_loader":24}],20:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -41434,7 +41434,7 @@ exports.Projector = Projector;
 exports.CanvasRenderer = CanvasRenderer;
 exports.SceneUtils = SceneUtils;
 exports.LensFlare = LensFlare;
-},{}],26:[function(require,module,exports) {
+},{}],22:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -43919,7 +43919,7 @@ exports.gui = gui;
 exports.GUI = GUI$1;
 exports.default = index;
 //# sourceMappingURL=dat.gui.module.js.map
-},{}],28:[function(require,module,exports) {
+},{}],18:[function(require,module,exports) {
 var THREE = require('three')
 
 /**
@@ -44968,11 +44968,15 @@ Object.defineProperties( THREE.OrbitControls.prototype, {
 
 module.exports = exports.default = THREE.OrbitControls
 
-},{"three":24}],8:[function(require,module,exports) {
+},{"three":20}],8:[function(require,module,exports) {
 module.exports="/grassDiff.1af51741.jpg";
-},{}],46:[function(require,module,exports) {
+},{}],10:[function(require,module,exports) {
+module.exports="/grassBump.e8c2c1a0.png";
+},{}],12:[function(require,module,exports) {
+module.exports="/grassAO.ae870853.jpg";
+},{}],14:[function(require,module,exports) {
 module.exports="/daytonight.b5d88c13.png";
-},{}],22:[function(require,module,exports) {
+},{}],16:[function(require,module,exports) {
 module.exports="/tree.1356fb6c.obj";
 },{}],4:[function(require,module,exports) {
 "use strict";
@@ -44995,6 +44999,14 @@ var _grassDiff = require("../textures/grassDiff.jpg");
 
 var _grassDiff2 = _interopRequireDefault(_grassDiff);
 
+var _grassBump = require("../textures/grassBump.png");
+
+var _grassBump2 = _interopRequireDefault(_grassBump);
+
+var _grassAO = require("../textures/grassAO.jpg");
+
+var _grassAO2 = _interopRequireDefault(_grassAO);
+
 var _daytonight = require("../textures/daytonight.png");
 
 var _daytonight2 = _interopRequireDefault(_daytonight);
@@ -45008,22 +45020,22 @@ var treeGeo = require('../models/tree.obj'); //a library that is a controller so
 
 
 var colours = { //global variables
-  blue01: 0x97b5e6,
-  blue02: 0x78afc4,
-  blue03: 0xb8ccd7,
-  green01: 0x424f23,
-  green02: 0x88842b,
-  green03: 0xb2b854,
-  brown01: 0x9b4d26,
-  brown02: 0x804e45,
-  brown03: 0xad7d67,
-  red01: 0xa54338,
-  orange01: 0x9b4d26,
-  orange02: 0xad5b29,
-  white01: 0xfff6e2,
-  white02: 0xffdecf,
-  grey01: 0x9d8c72,
-  grey02: 0x9a9693
+	blue01: 0x97b5e6,
+	blue02: 0x78afc4,
+	blue03: 0xb8ccd7,
+	green01: 0x424f23,
+	green02: 0x88842b,
+	green03: 0xb2b854,
+	brown01: 0x9b4d26,
+	brown02: 0x804e45,
+	brown03: 0xad7d67,
+	red01: 0xa54338,
+	orange01: 0x9b4d26,
+	orange02: 0xad5b29,
+	white01: 0xfff6e2,
+	white02: 0xffdecf,
+	grey01: 0x9d8c72,
+	grey02: 0x9a9693
 };
 
 var scene = void 0,
@@ -45042,49 +45054,48 @@ var scene = void 0,
 ///// CREATE SCENE, CAMERA, RENDERER ///////
 
 var createScene = function createScene() {
-  //Get the width and the height of the screen,
-  //Use them to set up the aspect ratio of the camera
-  //and the size of the render.
-  HEIGHT = window.innerHeight;
-  WIDTH = window.innerWidth;
+	//Get the width and the height of the screen,
+	//Use them to set up the aspect ratio of the camera
+	//and the size of the render.
+	HEIGHT = window.innerHeight;
+	WIDTH = window.innerWidth;
 
-  // Create the SCENE
-  scene = new THREE.Scene();
+	// Create the SCENE
+	scene = new THREE.Scene();
 
-  // Add a fog effect to the scene, same colour as the background colour used in stylesheet
-  // scene.fog = new THREE.Fog(colours.blue03, 1, 1000);
-  // console.log(scene.fog);
+	// Add a fog effect to the scene, same colour as the background colour used in stylesheet
+	// scene.fog = new THREE.Fog(colours.blue03, 1, 1000);
+	// console.log(scene.fog);
 
-  // Create the CAMERA
-  aspectRatio = WIDTH / HEIGHT; //set up aspect ratio with WIDTH + HEIGHT
-  fieldOfView = 60;
-  nearPlane = 0.1;
-  farPlane = 100000;
+	// Create the CAMERA
+	aspectRatio = WIDTH / HEIGHT; //set up aspect ratio with WIDTH + HEIGHT
+	fieldOfView = 60;
+	nearPlane = 0.1;
+	farPlane = 100000;
 
-  camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
-  camera.position.x = 0;
-  camera.position.y = 325;
-  camera.position.z = 400;
-  camera.lookAt({ x: 0, y: 100.00000000000001, z: 450 });
-  camera.setFocalLength(70); // default at 35
+	camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
+	camera.position.x = 0;
+	camera.position.y = 325;
+	camera.position.z = 400;
+	camera.lookAt({ x: 0, y: 100.00000000000001, z: 450 });
+	camera.setFocalLength(70); // default at 35
 
-  //Create the RENDERER
-  renderer = new THREE.WebGLRenderer({
-    // Allow transparency to show the gradient background we defined in css.
-    alpha: true,
-    //Activate anti-aliasing, this is less performant, but as the project is low poly, should be fine.
-    antialias: true
-  });
-  // Define size of renderer, in this case it will fill the entire screen.
-  renderer.setSize(WIDTH, HEIGHT);
-  //Enable shadow rendering
-  renderer.setPixelRatio(window.devicePixelRation || 1); //setting it to the pixel ratio settings of your pc or 1 if it's not defined.
-  renderer.shadowMap.enabled = true;
+	//Create the RENDERER
+	renderer = new THREE.WebGLRenderer({
+		// Allow transparency to show the gradient background we defined in css.
+		alpha: true,
+		//Activate anti-aliasing, this is less performant, but as the project is low poly, should be fine.
+		antialias: true
+	});
+	// Define size of renderer, in this case it will fill the entire screen.
+	renderer.setSize(WIDTH, HEIGHT);
+	//Enable shadow rendering
+	renderer.setPixelRatio(window.devicePixelRation || 1); //setting it to the pixel ratio settings of your pc or 1 if it's not defined.
+	renderer.shadowMap.enabled = true;
 
-  // Add the DOM element of the renderer to the container we created in the HTML.
-  container = document.getElementById('world');
-  container.appendChild(renderer.domElement);
-  console.log('renderer:', renderer);
+	// Add the DOM element of the renderer to the container we created in the HTML.
+	container = document.getElementById('world');
+	container.appendChild(renderer.domElement);
 };
 
 /////// CREATE LIGHTS /////////
@@ -45093,494 +45104,550 @@ var hemisphereLight = void 0,
     shadowLight = void 0; //global variables
 
 var createLights = function createLights() {
-  // A hemisphere Light is a gradient coloured light;
-  //First param is the sky colour, second param is the ground colour, third param is the intensity of the light.
-  hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, .9);
-  console.log('hemispherelight:', hemisphereLight);
+	// A hemisphere Light is a gradient coloured light;
+	//First param is the sky colour, second param is the ground colour, third param is the intensity of the light.
+	hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, .9);
 
-  // A directional light shines from a specific direction.
-  //Acts like the sun, means all the rays produced are parallel.
-  shadowLight = new THREE.DirectionalLight(0xffffff, .9);
-  //Set the direction of the direcitonal light
-  shadowLight.position.set(150, 500, 250); //150, 350, 350
-  shadowLight.rotation.set(0, 0, 0);
-  //Allow directional light to cast shadows
-  shadowLight.castShadow = true;
-  // shadowLight.shadowCameraVisible = true;
-  //Define the visible area of the projected shadow
-  shadowLight.shadow.camera.left = -400;
-  shadowLight.shadow.camera.right = 400;
-  shadowLight.shadow.camera.top = 400;
-  shadowLight.shadow.camera.bottom = -400;
-  shadowLight.shadow.camera.near = 1;
-  shadowLight.shadow.camera.far = -1000;
-  // Define the resolution of the shadow, the higher the better but also more expensive and less performant
-  shadowLight.shadow.mapSize.width = 2048;
-  shadowLight.shadow.mapSize.height = 2048;
+	// A directional light shines from a specific direction.
+	//Acts like the sun, means all the rays produced are parallel.
+	shadowLight = new THREE.DirectionalLight(0xffffff, .9);
+	//Set the direction of the direcitonal light
+	shadowLight.position.set(-150, 600, -600); //150, 350, 350
+	shadowLight.rotation.set(0, 0, 0);
+	//Allow directional light to cast shadows
+	shadowLight.castShadow = true;
+	// shadowLight.shadowCameraVisible = true;
+	//Define the visible area of the projected shadow
+	shadowLight.shadow.camera.left = -400;
+	shadowLight.shadow.camera.right = 400;
+	shadowLight.shadow.camera.top = 400;
+	shadowLight.shadow.camera.bottom = -400;
+	shadowLight.shadow.camera.near = 1;
+	shadowLight.shadow.camera.far = -1000;
+	// Define the resolution of the shadow, the higher the better but also more expensive and less performant
+	shadowLight.shadow.mapSize.width = 2048;
+	shadowLight.shadow.mapSize.height = 2048;
 
-  // To activate the lights, just add them to the scene
-  scene.add(hemisphereLight);
-  scene.add(shadowLight);
+	// To activate the lights, just add them to the scene
+	scene.add(hemisphereLight);
+	scene.add(shadowLight);
 };
+
+THREE.ImageUtils.crossOrigin = ''; //Allow CORS
 
 ////// DEFINING A GROUND /////////////
 // This function is defining what a sea would look like
 var defineGround = function defineGround() {
-  //(global variable)
-  var geo = new THREE.SphereGeometry(300, 30, 30);
+	//(global variable)
+	var geo = new THREE.SphereGeometry(300, 30, 30);
 
-  var grassTexture = new THREE.TextureLoader().load(_grassDiff2.default);
-  grassTexture.repeat.set(100, 100);
-  grassTexture.wrapS = grassTexture.wrapT = THREE.RepeatWrapping;
-  grassTexture.anisotropy = 16;
-  // grassTexture.needsUpdate = true;
+	var grassDiffuse = new THREE.TextureLoader().load(_grassDiff2.default);
+	grassDiffuse.repeat.set(20, 20);
+	grassDiffuse.wrapS = grassDiffuse.wrapT = THREE.RepeatWrapping;
+	grassDiffuse.anisotropy = 16;
+	// grassDiffuse.needsUpdate = true;
 
-  var mat = new THREE.MeshStandardMaterial({
-    flatShading: true,
-    map: grassTexture
-  });
-  // important: by merging vertices we ensure the continuity of the waves
-  // geo.mergeVertices();
-  //
-  // // get the vertices
-  // let allVerts = geo.vertices.length;
-  //
-  // // create an array to store new data associated to each vertex
-  // this.waves = [];
-  //
-  // for (let i=0; i<allVerts; i++){
-  // // get each vertex
-  // let vert = geom.vertices[i];
-  //
-  // // store some data associated to it
-  // this.waves.push({y:vert.y,
-  // 								 x:vert.x,
-  // 								 z:vert.z,
-  // 								 // a random angle
-  // 								 ang:Math.random()*Math.PI*2,
-  // 								 // a random distance
-  // 								 amp:5 + Math.random()*15,
-  // 								 // a random speed between 0.016 and 0.048 radians / frame
-  // 								 speed:0.016 + Math.random()*0.032
-  // 								});
+	var grassBump = THREE.ImageUtils.loadTexture(_grassBump2.default);
+	console.log('BUMP', grassBump);
+	grassBump.repeat.set(20, 20);
+	grassBump.wrapS = grassBump.wrapT = THREE.RepeatWrapping;
+	grassBump.anisotropy = 16;
+	// grassBump.needsUpdate = true;
 
-  this.mesh = new THREE.Mesh(geo, mat);
-  this.mesh.receiveShadow = true;
-  this.mesh.castShadow = false;
-  this.mesh.rotation.z = -Math.PI / 2;
+	var grassAO = THREE.ImageUtils.loadTexture(_grassAO2.default);
+	console.log('AO', grassAO);
+	grassAO.repeat.set(20, 20);
+	grassAO.wrapS = grassBump.wrapT = THREE.RepeatWrapping;
+	grassAO.anisotropy = 16;
+	// grassAO.needsUpdate = true;
+
+	var mat = new THREE.MeshPhongMaterial({
+		flatShading: false,
+		map: grassDiffuse,
+		bumpMap: grassBump,
+		bumpScale: .8,
+		aoMap: grassAO,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0
+	});
+	console.log(mat);
+	// important: by merging vertices we ensure the continuity of the waves
+	// geo.mergeVertices();
+	//
+	// // get the vertices
+	// let allVerts = geo.vertices.length;
+	//
+	// // create an array to store new data associated to each vertex
+	// this.waves = [];
+	//
+	// for (let i=0; i<allVerts; i++){
+	// // get each vertex
+	// let vert = geom.vertices[i];
+	//
+	// // store some data associated to it
+	// this.waves.push({y:vert.y,
+	// 								 x:vert.x,
+	// 								 z:vert.z,
+	// 								 // a random angle
+	// 								 ang:Math.random()*Math.PI*2,
+	// 								 // a random distance
+	// 								 amp:5 + Math.random()*15,
+	// 								 // a random speed between 0.016 and 0.048 radians / frame
+	// 								 speed:0.016 + Math.random()*0.032
+	// 								});
+
+	this.mesh = new THREE.Mesh(geo, mat);
+	this.mesh.receiveShadow = true;
+	this.mesh.castShadow = false;
+	this.mesh.rotation.z = -Math.PI / 2;
 };
 
 //////// DEFINING A CLOUD //////////
 
 var defineCloud = function defineCloud() {
-  // Create an empty container that will hold the different parts of the cloud
-  this.mesh = new THREE.Object3D();
+	// Create an empty container that will hold the different parts of the cloud
+	this.mesh = new THREE.Object3D();
 
-  //Create a cube geometry;
-  //this shape will be duplicated to create the cloud
-  var geo = new THREE.IcosahedronGeometry(15); //30, 30, 30
+	//Create a cube geometry;
+	//this shape will be duplicated to create the cloud
+	var geo = new THREE.IcosahedronGeometry(15); //30, 30, 30
 
-  //Create a material; a simple white material
-  var mat = new THREE.MeshStandardMaterial({
-    color: colours.white02,
-    opacity: .5
-  });
+	//Create a material; a simple white material
+	var mat = new THREE.MeshStandardMaterial({
+		color: colours.white02,
+		opacity: .5
+	});
 
-  // Duplicate the geometry a random number of times
-  var numOfBlocs = 3 + Math.floor(Math.random() * 3);
-  //Loop to create duplicates
-  for (var i = 0; i < numOfBlocs; i++) {
-    //Create the mesh with the geometry + material
-    var blocs = new THREE.Mesh(geo, mat);
-    //Set the position and rotation of each cube randomly
-    blocs.position.x = i * 15;
-    blocs.position.y = Math.random() * 10;
-    blocs.position.z = Math.random() * 10;
-    blocs.rotation.z = Math.random() * Math.PI * 2;
-    blocs.rotation.y = Math.random() * Math.PI * 2;
-    //Set the size of the cube randomly
-    var size = .1 + Math.random() * .9;
-    blocs.scale.set(size, size, size);
+	// Duplicate the geometry a random number of times
+	var numOfBlocs = 3 + Math.floor(Math.random() * 3);
+	//Loop to create duplicates
+	for (var i = 0; i < numOfBlocs; i++) {
+		//Create the mesh with the geometry + material
+		var blocs = new THREE.Mesh(geo, mat);
+		//Set the position and rotation of each cube randomly
+		blocs.position.x = i * 15;
+		blocs.position.y = Math.random() * 10;
+		blocs.position.z = Math.random() * 10;
+		blocs.rotation.z = Math.random() * Math.PI * 2;
+		blocs.rotation.y = Math.random() * Math.PI * 2;
+		//Set the size of the cube randomly
+		var size = .1 + Math.random() * .9;
+		blocs.scale.set(size, size, size);
 
-    //Alow each cube to cast and receive shadows
-    blocs.castShadow = true;
-    blocs.receiveShadow = true;
+		//Alow each cube to cast and receive shadows
+		blocs.castShadow = true;
+		blocs.receiveShadow = true;
 
-    // Add the cube to the container we created at the beginning.
-    this.mesh.add(blocs);
-  }
+		// Add the cube to the container we created at the beginning.
+		this.mesh.add(blocs);
+	}
 };
 
-///// DEFINING THE SKY OBJECT WITH OUR CLOUDS //////////
-var defineSky = function defineSky() {
-  //(global variable)
-  //Create an empty container
-  this.mesh = new THREE.Object3D();
-  //Choose a number of clouds to be scattered in the sky
-  this.numOfClouds = 20;
-  //To distribute the clouds consistently, need to place according to a uniform angle
-  var stepAngle = Math.PI * 2 / this.numOfClouds;
+///// DEFINING A CLOUD GROUP WITH OUR CLOUDS //////////
+var defineCloudGrp = function defineCloudGrp() {
+	//(global variable)
+	//Create an empty container
+	this.mesh = new THREE.Object3D();
+	//Choose a number of clouds to be scattered in the sky
+	this.numOfClouds = 20;
+	//To distribute the clouds consistently, need to place according to a uniform angle
+	var stepAngle = Math.PI * 2 / this.numOfClouds;
 
-  //////////CREATE CLOUD INSTANCES INSIDE SKY OBJECT  //////////
-  for (var i = 0; i < this.numOfClouds; i++) {
-    var cloud = new defineCloud();
-    // Set the rotation and position of each cloud using some trigonometry
-    var a = stepAngle * i; //final angle of cloud group.
-    var h = 750 + Math.random() * 200; //this is the distance between the centre of the axis and the cloud itself
-    //Trigonometry: Converting polar coordinates(angle, distance) into Cartesian coordinates(x, y)
-    cloud.mesh.position.y = Math.sin(a) * h;
-    cloud.mesh.position.x = Math.cos(a) * h;
-    //Rotate the cloud according to it's position
-    cloud.mesh.rotation.z = a + Math.PI / 2;
-    //For a better result we position the clouds at random depths inside the scene using the z (depth) axis.
-    // cloud.mesh.position.z = - 400 - Math.random()*400;
-    cloud.mesh.position.z = -600; // - 600
-    //Also setting a random scale for each cloud
-    var size = 1 + Math.random() * 3;
-    cloud.mesh.scale.set(size, size, size);
+	//////////CREATE CLOUD INSTANCES INSIDE SKY OBJECT  //////////
+	for (var i = 0; i < this.numOfClouds; i++) {
+		var cloud = new defineCloud();
+		// Set the rotation and position of each cloud using some trigonometry
+		var a = stepAngle * i; //final angle of cloud group.
+		var h = 750 + Math.random() * 200; //this is the distance between the centre of the axis and the cloud itself
+		//Trigonometry: Converting polar coordinates(angle, distance) into Cartesian coordinates(x, y)
+		cloud.mesh.position.y = Math.sin(a) * h;
+		cloud.mesh.position.x = Math.cos(a) * h;
+		//Rotate the cloud according to it's position
+		// cloud.mesh.rotation.z = a + Math.PI/2;
+		//For a better result we position the clouds at random depths inside the scene using the z (depth) axis.
+		// cloud.mesh.position.z = - 600;
+		//Also setting a random scale for each cloud
+		var size = 1 + Math.random() * 3;
+		cloud.mesh.scale.set(size, size, size);
 
-    //Finally, adding the cloud to the scene
-    this.mesh.add(cloud.mesh);
-  }
+		//Finally, adding the cloud to the scene
+		this.mesh.add(cloud.mesh);
+	}
 };
 
 ////////////// TREE 1: DEFINE PINE TREE /////////////////
 var definePineTree = function definePineTree() {
-  this.mesh = new THREE.Object3D();
-  var pineTrunkGeo = new THREE.BoxGeometry(2, 13, 2);
-  var pineTrunkMat = new THREE.MeshStandardMaterial({ color: colours.brown01, flatShading: true });
-  var pineTrunk = new THREE.Mesh(pineTrunkGeo, pineTrunkMat);
-  pineTrunk.castShadow = true;
-  pineTrunk.receiveShadow = true;
-  this.mesh.add(pineTrunk);
-  var pineTopGeo = new THREE.ConeGeometry(6, 14, 8);
-  var pineTopMat = new THREE.MeshStandardMaterial({ color: colours.green02, flatShading: true });
-  var pineTreeTop = new THREE.Mesh(pineTopGeo, pineTopMat);
-  pineTreeTop.castShadow = true;
-  pineTreeTop.receiveShadow = true;
-  pineTreeTop.position.y = 3;
-  this.mesh.add(pineTreeTop);
+	this.mesh = new THREE.Object3D();
+	var pineTrunkGeo = new THREE.BoxGeometry(2, 13, 2);
+	var pineTrunkMat = new THREE.MeshStandardMaterial({ color: colours.brown01, flatShading: true });
+	var pineTrunk = new THREE.Mesh(pineTrunkGeo, pineTrunkMat);
+	pineTrunk.castShadow = true;
+	pineTrunk.receiveShadow = true;
+	this.mesh.add(pineTrunk);
+	var pineTopGeo = new THREE.ConeGeometry(6, 14, 8);
+	var pineTopMat = new THREE.MeshStandardMaterial({ color: colours.green02, flatShading: true });
+	var pineTreeTop = new THREE.Mesh(pineTopGeo, pineTopMat);
+	pineTreeTop.castShadow = true;
+	pineTreeTop.receiveShadow = true;
+	pineTreeTop.position.y = 3;
+	this.mesh.add(pineTreeTop);
 };
 
 ////////////// TREE 2: DEFINE ROUND TREE /////////////
 var defineRoundTree = function defineRoundTree() {
-  this.mesh = new THREE.Object3D();
-  var roundTrunkGeo = new THREE.BoxGeometry(2, 20, 2);
-  var roundTrunkMat = new THREE.MeshStandardMaterial({ color: colours.brown02, flatShading: true });
-  var roundTrunk = new THREE.Mesh(roundTrunkGeo, roundTrunkMat);
-  roundTrunk.castShadow = true;
-  roundTrunk.receiveShadow = true;
-  this.mesh.add(roundTrunk);
+	this.mesh = new THREE.Object3D();
+	var roundTrunkGeo = new THREE.BoxGeometry(2, 20, 2);
+	var roundTrunkMat = new THREE.MeshStandardMaterial({ color: colours.brown02, flatShading: true });
+	var roundTrunk = new THREE.Mesh(roundTrunkGeo, roundTrunkMat);
+	roundTrunk.castShadow = true;
+	roundTrunk.receiveShadow = true;
+	this.mesh.add(roundTrunk);
 
-  var roundTopGeo = new THREE.SphereGeometry(7, 7, 8);
-  var roundTopMat = new THREE.MeshStandardMaterial({ color: colours.green02, flatShading: true });
-  var roundTreeTop = new THREE.Mesh(roundTopGeo, roundTopMat);
-  roundTreeTop.castShadow = true;
-  roundTreeTop.receiveShadow = true;
-  roundTreeTop.position.y = 5;
-  this.mesh.add(roundTreeTop);
+	var roundTopGeo = new THREE.SphereGeometry(7, 7, 8);
+	var roundTopMat = new THREE.MeshStandardMaterial({ color: colours.green02, flatShading: true });
+	var roundTreeTop = new THREE.Mesh(roundTopGeo, roundTopMat);
+	roundTreeTop.castShadow = true;
+	roundTreeTop.receiveShadow = true;
+	roundTreeTop.position.y = 5;
+	this.mesh.add(roundTreeTop);
 };
 
 ////////// DEFINE APPLE TREETOP ////////////
 var defineAppleTreeTop = function defineAppleTreeTop() {
-  // Create an empty container that will hold the blocks of the tree top
-  this.mesh = new THREE.Object3D();
-  this.mesh.scale.set(1.5, 1.5, 1.5);
+	// Create an empty container that will hold the blocks of the tree top
+	this.mesh = new THREE.Object3D();
+	this.mesh.scale.set(1.5, 1.5, 1.5);
 
-  //Create a cube geometry;
-  //this shape will be duplicated to create the cloud
-  var appleTreeTopGeo = new THREE.BoxGeometry(2, 2, 2); //30, 30, 30
+	//Create a cube geometry;
+	//this shape will be duplicated to create the cloud
+	var appleTreeTopGeo = new THREE.BoxGeometry(2, 2, 2); //30, 30, 30
 
-  //Create a material; a simple white material
-  var appleTreeTopMat = new THREE.MeshPhongMaterial({
-    color: colours.green02
-  });
+	//Create a material; a simple white material
+	var appleTreeTopMat = new THREE.MeshPhongMaterial({
+		color: colours.green02
+	});
 
-  // Duplicate the geometry a random number of times
-  var numOfBlocs = 30 + Math.floor(Math.random() * 3);
-  //Loop to create duplicates
-  for (var i = 0; i < numOfBlocs; i++) {
-    //Create the mesh with the geometry + material
-    var blocs = new THREE.Mesh(appleTreeTopGeo, appleTreeTopMat);
-    //Set the position and rotation of each cube randomly
-    blocs.position.x = i * .5;
-    blocs.position.y = Math.random() * 10;
-    blocs.position.z = Math.random() * 10;
-    blocs.rotation.z = Math.random() * Math.PI * 2;
-    blocs.rotation.y = Math.random() * Math.PI * 2;
-    //Set the size of the cube randomly
-    var size = .7 + Math.random() * 2;
-    blocs.scale.set(size, size, size);
+	// Duplicate the geometry a random number of times
+	var numOfBlocs = 30 + Math.floor(Math.random() * 3);
+	//Loop to create duplicates
+	for (var i = 0; i < numOfBlocs; i++) {
+		//Create the mesh with the geometry + material
+		var blocs = new THREE.Mesh(appleTreeTopGeo, appleTreeTopMat);
+		//Set the position and rotation of each cube randomly
+		blocs.position.x = i * .5;
+		blocs.position.y = Math.random() * 10;
+		blocs.position.z = Math.random() * 10;
+		blocs.rotation.z = Math.random() * Math.PI * 2;
+		blocs.rotation.y = Math.random() * Math.PI * 2;
+		//Set the size of the cube randomly
+		var size = .7 + Math.random() * 2;
+		blocs.scale.set(size, size, size);
 
-    //Alow each cube to cast and receive shadows
-    blocs.castShadow = true;
-    blocs.receiveShadow = true;
-    // Add the cube to the container we created at the beginning.
-    this.mesh.add(blocs);
-  }
+		//Alow each cube to cast and receive shadows
+		blocs.castShadow = true;
+		blocs.receiveShadow = true;
+		// Add the cube to the container we created at the beginning.
+		this.mesh.add(blocs);
+	}
 };
 ///////////// TREE 3: DEFINE APPLE TREE //////////////
 var defineAppleTree = function defineAppleTree() {
-  this.mesh = new THREE.Object3D();
-  var appleTreeTrunkGeo = new THREE.BoxGeometry(2, 20, 2);
-  var appleTreeTrunkMat = new THREE.MeshStandardMaterial({ color: colours.brown02, flatShading: true });
-  var appleTreeTrunk = new THREE.Mesh(appleTreeTrunkGeo, appleTreeTrunkMat);
-  appleTreeTrunk.castShadow = true;
-  appleTreeTrunk.receiveShadow = true;
-  this.mesh.add(appleTreeTrunk);
+	this.mesh = new THREE.Object3D();
+	var appleTreeTrunkGeo = new THREE.BoxGeometry(2, 20, 2);
+	var appleTreeTrunkMat = new THREE.MeshStandardMaterial({ color: colours.brown02, flatShading: true });
+	var appleTreeTrunk = new THREE.Mesh(appleTreeTrunkGeo, appleTreeTrunkMat);
+	appleTreeTrunk.castShadow = true;
+	appleTreeTrunk.receiveShadow = true;
+	this.mesh.add(appleTreeTrunk);
 
-  var appleTreeTop = new defineAppleTreeTop();
-  // appleTreeTop.mesh.position.x = - 10;
-  // appleTreeTop.mesh.position.y = 5;
-  appleTreeTop.mesh.position.set(-10, 5, -5);
-  this.mesh.add(appleTreeTop.mesh);
+	var appleTreeTop = new defineAppleTreeTop();
+	// appleTreeTop.mesh.position.x = - 10;
+	// appleTreeTop.mesh.position.y = 5;
+	appleTreeTop.mesh.position.set(-10, 5, -5);
+	this.mesh.add(appleTreeTop.mesh);
 };
 
 ///////// DEFINE SPOTTY TREETOP ////////////
 var defineSpottyTreeTop = function defineSpottyTreeTop() {
-  // Create an empty container that will hold the blocks of the tree top
-  this.mesh = new THREE.Object3D();
-  this.mesh.scale.set(1.5, 1.5, 1.5);
+	// Create an empty container that will hold the blocks of the tree top
+	this.mesh = new THREE.Object3D();
+	this.mesh.scale.set(1.5, 1.5, 1.5);
 
-  //Create a cube geometry;
-  //this shape will be duplicated to create the cloud
-  var spottyTreeTopGeo = new THREE.SphereGeometry(2, 6, 6); //30, 30, 30
+	//Create a cube geometry;
+	//this shape will be duplicated to create the cloud
+	var spottyTreeTopGeo = new THREE.SphereGeometry(2, 6, 6); //30, 30, 30
 
-  //Create a material; a simple white material
-  var spottyTreeTopMat = new THREE.MeshPhongMaterial({
-    color: colours.green02, flatShading: true });
+	//Create a material; a simple white material
+	var spottyTreeTopMat = new THREE.MeshPhongMaterial({
+		color: colours.green02, flatShading: true });
 
-  // Duplicate the geometry a random number of times
-  var numOfBlocs = 15 + Math.floor(Math.random() * 3);
-  //Loop to create duplicates
-  for (var i = 0; i < numOfBlocs; i++) {
-    //Create the mesh with the geometry + material
-    var blocs = new THREE.Mesh(spottyTreeTopGeo, spottyTreeTopMat);
-    //Set the position and rotation of each cube randomly
-    blocs.position.x = i * .5;
-    blocs.position.y = Math.random() * 10;
-    blocs.position.z = Math.random() * 10;
-    blocs.rotation.z = Math.random() * Math.PI * 2;
-    blocs.rotation.y = Math.random() * Math.PI * 2;
-    //Set the size of the cube randomly
-    var size = .7 + Math.random() * 2;
-    blocs.scale.set(size, size, size);
+	// Duplicate the geometry a random number of times
+	var numOfBlocs = 15 + Math.floor(Math.random() * 3);
+	//Loop to create duplicates
+	for (var i = 0; i < numOfBlocs; i++) {
+		//Create the mesh with the geometry + material
+		var blocs = new THREE.Mesh(spottyTreeTopGeo, spottyTreeTopMat);
+		//Set the position and rotation of each cube randomly
+		blocs.position.x = i * .5;
+		blocs.position.y = Math.random() * 10;
+		blocs.position.z = Math.random() * 10;
+		blocs.rotation.z = Math.random() * Math.PI * 2;
+		blocs.rotation.y = Math.random() * Math.PI * 2;
+		//Set the size of the cube randomly
+		var size = .7 + Math.random() * 2;
+		blocs.scale.set(size, size, size);
 
-    //Alow each cube to cast and receive shadows
-    blocs.castShadow = true;
-    blocs.receiveShadow = true;
-    // Add the cube to the container we created at the beginning.
-    this.mesh.add(blocs);
-  }
+		//Alow each cube to cast and receive shadows
+		blocs.castShadow = true;
+		blocs.receiveShadow = true;
+		// Add the cube to the container we created at the beginning.
+		this.mesh.add(blocs);
+	}
 };
 /////////////TREE 4: DEFINE SPOTTY TREE //////////////
 var defineSpottyTree = function defineSpottyTree() {
-  this.mesh = new THREE.Object3D();
-  var spottyTreeTrunkGeo = new THREE.BoxGeometry(4, 20, 4);
-  var spottyTreeTrunkMat = new THREE.MeshStandardMaterial({ color: colours.brown02, flatShading: true });
-  var spottyTreeTrunk = new THREE.Mesh(spottyTreeTrunkGeo, spottyTreeTrunkMat);
-  spottyTreeTrunk.castShadow = true;
-  spottyTreeTrunk.receiveShadow = true;
-  this.mesh.add(spottyTreeTrunk);
+	this.mesh = new THREE.Object3D();
+	var spottyTreeTrunkGeo = new THREE.BoxGeometry(4, 20, 4);
+	var spottyTreeTrunkMat = new THREE.MeshStandardMaterial({ color: colours.brown02, flatShading: true });
+	var spottyTreeTrunk = new THREE.Mesh(spottyTreeTrunkGeo, spottyTreeTrunkMat);
+	spottyTreeTrunk.castShadow = true;
+	spottyTreeTrunk.receiveShadow = true;
+	this.mesh.add(spottyTreeTrunk);
 
-  var spottyTreeTop = new defineSpottyTreeTop();
-  spottyTreeTop.mesh.position.set(-8, 6, -5);
-  this.mesh.add(spottyTreeTop.mesh);
+	var spottyTreeTop = new defineSpottyTreeTop();
+	spottyTreeTop.mesh.position.set(-8, 6, -5);
+	this.mesh.add(spottyTreeTop.mesh);
 };
 
 ////// DEFINE ROCK //////////////
 var defineRock = function defineRock() {
-  this.mesh = new THREE.Object3D();
-  var rockGeo = new THREE.BoxGeometry(3, 3, 3);
-  var rockMat = new THREE.MeshStandardMaterial({ color: colours.green01, flatShading: true });
-  var numOfBlocs = Math.floor(Math.random() * 3);
-  // Loop to create duplicates, 0-3 duplicates.
-  for (var i = 1; i < numOfBlocs; i++) {
-    var blocs = new THREE.Mesh(rockGeo, rockMat);
-    //Set the position and rotation of each cube randomly
-    blocs.position.x = i * 3;
-    blocs.position.y = Math.random() * 5;
-    blocs.position.z = Math.random() * 10;
-    blocs.rotation.z = Math.random() * Math.PI * 2;
-    blocs.rotation.y = Math.random() * Math.PI * 2;
-    //Set the size of the cube randomly
-    var size = 1 + Math.random() * 2;
-    blocs.scale.set(size, size, size);
-    blocs.castShadow = true;
-    blocs.receiveShadow = true;
-    // blocs.position.y = 300;
-    this.mesh.add(blocs);
-  }
+	this.mesh = new THREE.Object3D();
+	var rockGeo = new THREE.BoxGeometry(3, 3, 3);
+	var rockMat = new THREE.MeshStandardMaterial({ color: colours.grey02, flatShading: true });
+	var numOfBlocs = Math.floor(Math.random() * 3);
+	// Loop to create duplicates, 0-3 duplicates.
+	for (var i = 1; i < numOfBlocs; i++) {
+		var blocs = new THREE.Mesh(rockGeo, rockMat);
+		//Set the position and rotation of each cube randomly
+		blocs.position.x = i * 3;
+		blocs.position.y = Math.random() * 2;
+		blocs.position.z = Math.random() * 10;
+		blocs.rotation.z = Math.random() * Math.PI * 2;
+		blocs.rotation.y = Math.random() * Math.PI * 2;
+		//Set the size of the cube randomly
+		var size = 1 + Math.random() * 2;
+		blocs.scale.set(size, size, size);
+		blocs.castShadow = true;
+		blocs.receiveShadow = true;
+		this.mesh.add(blocs);
+	}
 };
 
-//////// DEFINE WORLD //////////
 var world = void 0,
-    skybox = void 0,
-    ground = void 0,
     sky = void 0,
+    ground = void 0,
+    clouds = void 0,
     trees = void 0,
     rocks = void 0; //(global variable)
 
+//////// DEFINE WORLD //////////
 var defineWorld = function defineWorld() {
-  this.mesh = new THREE.Object3D();
+	this.mesh = new THREE.Object3D();
 
-  ///////////// CREATE A SKYBOX //////////////
+	////////// CREATING AN INSTANCE OF GROUND /////////////
+	ground = new defineGround();
+	ground.mesh.position.y = 0; // -150
+	ground.mesh.position.z = 0; //150
+	// Add the mesh of the sea to the scene
+	this.mesh.add(ground.mesh);
 
-  // prepare ShaderMaterial
-  var uniforms = {
-    texture: { type: 't', value: THREE.ImageUtils.loadTexture(_daytonight2.default) }
-  };
-  var skyMaterial = new THREE.ShaderMaterial({
-    uniforms: uniforms,
-    vertexShader: document.getElementById('sky-vertex').textContent, fragmentShader: document.getElementById('sky-fragment').textContent,
-    side: THREE.BackSide
-  });
-  // create Mesh with sphere geometry and add to the scene
-  var skyBox = new THREE.Mesh(new THREE.SphereGeometry(5000, 60, 40), skyMaterial);
-  skyBox.scale.set(-1, 1, 1);
-  skyBox.rotation.order = 'XZY';
-  skyBox.renderDepth = 500.0;
-  this.mesh.add(skyBox);
-  console.log('SKYBOX', skyBox);
+	/////////////////// CREATE RANDOM FUCKING TREES ///////////////////
 
-  ////////// CREATING AN INSTANCE OF GROUND /////////////
-  ground = new defineGround();
-  ground.mesh.position.y = 0; // -150
-  ground.mesh.position.z = 0; //150
-  // Add the mesh of the sea to the scene
-  this.mesh.add(ground.mesh);
 
-  //////// CREATE AN INSTANCE OF THE SKY ///////////
-  sky = new defineSky();
-  //Push its centre a bit towards the bottom of the screen
-  sky.mesh.position.y = -500; // - 300
-  // TODO: sky will be moving towards user as they move on the z axis.
-  // sky.mesh.position.z = 300;
-  this.mesh.add(sky.mesh);
+	for (var i = 0; i < 50; i++) {
+		var pineTree = new definePineTree();
+		var roundTree = new defineRoundTree();
+		var appleTree = new defineAppleTree();
+		var spottyTree = new defineSpottyTree();
+		var treesArray = [pineTree, roundTree, appleTree, spottyTree];
+		trees = treesArray[i % treesArray.length];
+		var theta = (Math.random() - 0.5) * 4 * Math.PI;
+		var phi = (Math.random() - 0.5) * 2 * Math.PI;
+		var theta2 = Math.random() * Math.PI / 2;
+		var phi2 = Math.random() * Math.PI;
+		trees.mesh.position.x = 300 * Math.sin(theta) * Math.cos(phi);
+		trees.mesh.position.y = 300 * Math.sin(theta) * Math.sin(phi);
+		trees.mesh.position.z = 300 * Math.cos(theta);
+		trees.mesh.rotation.x = 300 * Math.sin(theta2) * Math.cos(phi2);
+		trees.mesh.rotation.y = 300 * Math.sin(theta2) * Math.sin(phi2);
+		trees.mesh.rotation.z = 300 * Math.cos(theta2);
+		this.mesh.add(trees.mesh);
+	}
+	// trees = new defineSpottyTree();
+	// trees.mesh.position.set(0, 305, 0);
+	camera.lookAt(trees.mesh.position);
+	// this.mesh.add(trees.mesh);
 
-  /////////////////// CREATE RANDOM FUCKING TREES ///////////////////
-  trees = new defineSpottyTree();
-  trees.mesh.position.set(0, 305, 0);
-  camera.lookAt(trees.mesh.position);
-  this.mesh.add(trees.mesh);
 
-  ///// CREATE RANDOM ROCKS //////
-  var numOfRocks = 100;
-  for (var i = 0; i < numOfRocks; i++) {
-    rocks = new defineRock();
-    var theta = Math.random(2 * Math.PI);
-    var phi = Math.random(Math.PI);
-    rocks.mesh.position.x = 300 * Math.cos(theta) * Math.cos(phi);
-    rocks.mesh.position.y = 300 * Math.cos(theta) * Math.sin(phi);
-    rocks.mesh.position.z = 300 * Math.cos(theta);
+	///// CREATE RANDOM ROCKS //////
+	var numOfRocks = 500;
+	for (var _i = 0; _i < numOfRocks; _i++) {
+		rocks = new defineRock();
+		var _theta = (Math.random() - 0.5) * 4 * Math.PI;
+		var _phi = (Math.random() - 0.5) * 2 * Math.PI;
+		rocks.mesh.position.x = 295 * Math.sin(_theta) * Math.cos(_phi);
+		rocks.mesh.position.y = 295 * Math.sin(_theta) * Math.sin(_phi);
+		rocks.mesh.position.z = 295 * Math.cos(_theta) - 5;
+		this.mesh.add(rocks.mesh);
+	}
+};
 
-    // console.log(rocks.mesh.position.x,rocks.mesh.position.y, rocks.mesh.position.z);
-    this.mesh.add(rocks.mesh);
-  }
+//// DEFINE SKY //////
+var defineSky = function defineSky() {
+	this.mesh = new THREE.Object3D();
+	///////////// CREATE A SKYBOX //////////////
+
+	// prepare ShaderMaterial
+	var uniforms = {
+		texture: { type: 't', value: THREE.ImageUtils.loadTexture(_daytonight2.default) }
+	};
+	var skyMaterial = new THREE.ShaderMaterial({
+		uniforms: uniforms,
+		vertexShader: document.getElementById('sky-vertex').textContent, fragmentShader: document.getElementById('sky-fragment').textContent,
+		side: THREE.BackSide
+	});
+	// create Mesh with sphere geometry and add to the scene
+	var skyBox = new THREE.Mesh(new THREE.SphereGeometry(5000, 60, 40), skyMaterial);
+	skyBox.scale.set(-1, 1, 1);
+	skyBox.rotation.order = 'XZY';
+	skyBox.renderDepth = 500.0;
+	this.mesh.add(skyBox);
+
+	//////// CREATE MULTIPLE INSTANCES OF CLOUDS ///////////
+
+	var numOfClouds = 200;
+	for (var i = 0; i < numOfClouds; i++) {
+		clouds = new defineCloud();
+		var theta = (Math.random() - 0.5) * 4 * Math.PI;
+		var phi = (Math.random() - 0.5) * 2 * Math.PI;
+		clouds.mesh.position.x = 600 * Math.sin(theta) * Math.cos(phi);
+		clouds.mesh.position.y = 600 * Math.sin(theta) * Math.sin(phi);
+		clouds.mesh.position.z = 600 * Math.cos(theta) - 5;
+		this.mesh.add(clouds.mesh);
+	}
 };
 
 /////// CREATING THE ENTIRE WORLD //////////////
 
 function createWorld() {
-  world = new defineWorld();
-  scene.add(world.mesh);
+	world = new defineWorld();
+	scene.add(world.mesh);
+}
+
+///// CREATE THE SKY /////////
+
+function createSky() {
+	sky = new defineSky();
+	scene.add(sky.mesh);
 }
 //TODO: Read rest of aviator tut, create mountains.
 
 
 ////////// INIT FUNCTION !!!!!!! ////////
 function init() {
-  //add (event) afterwards
-  //Set up the scene, camera and renderer
-  createScene();
+	//add (event) afterwards
+	//Set up the scene, camera and renderer
+	createScene();
 
-  //Add Lights
-  createLights();
+	//Add Lights
+	createLights();
 
-  //Add World: skybox, ground, clouds, trees, rocks
-  createWorld();
+	//Add World: skybox, ground, clouds, trees, rocks
+	createWorld();
+	createSky();
 
-  /// FUCK ORBIT CONTROLS
-  addHelpers();
+	/// FUCK ORBIT CONTROLS
+	addHelpers();
 
-  // //Add MouseMove Event Listener
-  // document.addEventListener('mousemove', handleMouseMove, false);
+	// //Add MouseMove Event Listener
+	// document.addEventListener('mousemove', handleMouseMove, false);
 
-  //Start a loop that will update the objects' positions
-  //And render the scene on each frame
-  loop();
+	//Start a loop that will update the objects' positions
+	//And render the scene on each frame
+	loop();
 }
 
 ///////// LOOP ANIMATION ////////////
 
 function loop() {
-  //Rotate the ground and the sky
-  // world.mesh.rotation.x += 0.01;
+	//Rotate the ground and the sky
+	// world.mesh.rotation.x += 0.005;
+	// sky.mesh.rotation.x += 0.001;
 
 
-  //Render the scene (+ its contents) and the camera. Need to rerender every time the animation changes.
-  renderer.render(scene, camera);
+	//Render the scene (+ its contents) and the camera. Need to rerender every time the animation changes.
+	renderer.render(scene, camera);
 
-  //Call the loop function again.
-  requestAnimationFrame(loop);
+	//Call the loop function again.
+	requestAnimationFrame(loop);
 }
 
 ///// HANDLE RESIZE CALLBACK  ////////
 
 var handleWindowResize = function handleWindowResize() {
-  console.log('resizing renderer!');
-  //update height and width of renderer and camera
-  HEIGHT = window.innerHeight;
-  WIDTH = window.innerWidth;
-  renderer.setSize(WIDTH, HEIGHT);
-  camera.aspect = WIDTH / HEIGHT;
-  camera.updateProjectionMatrix();
+	console.log('resizing renderer!');
+	//update height and width of renderer and camera
+	HEIGHT = window.innerHeight;
+	WIDTH = window.innerWidth;
+	renderer.setSize(WIDTH, HEIGHT);
+	camera.aspect = WIDTH / HEIGHT;
+	camera.updateProjectionMatrix();
 };
 
 //////////////// ORBIT CONTROLS //////////
 function addHelpers() {
-  // 1.Orbit Controls
-  controls = new _threeOrbitcontrols2.default(camera, renderer.domElement); //we want our camera that you want to change the position of, and the second argument is what you want to see.
-  controls.update();
+	// 1.Orbit Controls
+	controls = new _threeOrbitcontrols2.default(camera, renderer.domElement); //we want our camera that you want to change the position of, and the second argument is what you want to see.
+	controls.update();
 
-  // 2. ArrowHelper
-  var directionV3 = new THREE.Vector3(1, 0, 1);
-  var originV3 = new THREE.Vector3(0, 200, 0);
-  var arrowHelper = new THREE.ArrowHelper(directionV3, originV3, 100, 0xff0000, 20, 10); // 100 is length, 20 	and 10 are head length and width
-  scene.add(arrowHelper);
+	// 2. ArrowHelper
+	var directionV3 = new THREE.Vector3(1, 0, 1);
+	var originV3 = new THREE.Vector3(0, 200, 0);
+	var arrowHelper = new THREE.ArrowHelper(directionV3, originV3, 100, 0xff0000, 20, 10); // 100 is length, 20 	and 10 are head length and width
+	scene.add(arrowHelper);
 
-  //3. Axis Helper
-  var axes = new THREE.AxesHelper(200);
-  console.log('axes:', axes);
-  scene.add(axes);
+	//3. Axis Helper
+	var axes = new THREE.AxesHelper(200);
+	scene.add(axes);
 
-  //4. Bounding Box Helper
-  var bboxHelper = new THREE.BoxHelper(scene, 0x999999); //first argument is what you want bounding box to be around
-  scene.add(bboxHelper);
-  bboxHelper.update();
+	//4. Bounding Box Helper
+	var bboxHelper = new THREE.BoxHelper(scene, 0x999999); //first argument is what you want bounding box to be around
+	scene.add(bboxHelper);
+	bboxHelper.update();
 
-  //5. Camera Helper
-  var cameraParObj = new THREE.Object3D();
-  cameraParObj.position.y = 200;
-  cameraParObj.position.z = 700;
-  scene.add(cameraParObj);
-  cameraParObj.add(camera); //passing in my camera
-  var cameraHelper = new THREE.CameraHelper(camera); //passing in my camera
-  scene.add(cameraHelper);
-  cameraHelper.update();
+	//5. Camera Helper
+	var cameraParObj = new THREE.Object3D();
+	cameraParObj.position.y = 200;
+	cameraParObj.position.z = 700;
+	scene.add(cameraParObj);
+	cameraParObj.add(camera); //passing in my camera
+	var cameraHelper = new THREE.CameraHelper(camera); //passing in my camera
+	scene.add(cameraHelper);
+	cameraHelper.update();
 
-  //6. DirectionalLight Helper
-  var dlightHelper = new THREE.DirectionalLightHelper(shadowLight, 50); // 50 is helper size, shadowLight is my directional light
-  scene.add(dlightHelper);
-  dlightHelper.update();
+	//6. DirectionalLight Helper
+	var dlightHelper = new THREE.DirectionalLightHelper(shadowLight, 50); // 50 is helper size, shadowLight is my directional light
+	scene.add(dlightHelper);
+	dlightHelper.update();
 
-  //7. HemisphereLight Helper
-  var hlightHelper = new THREE.HemisphereLightHelper(hemisphereLight, 50, 300); // 50 is sphere size, 300 is arrow length, hemisphereLight is my light I've passed in.
-  scene.add(hlightHelper);
+	//7. HemisphereLight Helper
+	var hlightHelper = new THREE.HemisphereLightHelper(hemisphereLight, 50, 300); // 50 is sphere size, 300 is arrow length, hemisphereLight is my light I've passed in.
+	scene.add(hlightHelper);
 
-  //8. Grid Helper
-  var gridHelper = new THREE.GridHelper(1000, 40, colours.red01); // 500 is grid size, 20 is grid step
-  scene.add(gridHelper);
+	//8. Grid Helper
+	var gridHelper = new THREE.GridHelper(1000, 40, colours.red01); // 500 is grid size, 20 is grid step
+	scene.add(gridHelper);
 }
 
 ///// DOM BULLSHIT //////
@@ -45597,7 +45664,7 @@ window.addEventListener('resize', handleWindowResize, false);
 // 	function(object){
 // 		scene.add(object)
 // 	})
-},{"../css/index.css":6,"three":24,"dat.gui":26,"three-orbitcontrols":28,"../textures/grassDiff.jpg":8,"../textures/daytonight.png":46,"../models/tree.obj":22}],45:[function(require,module,exports) {
+},{"../css/index.css":6,"three":20,"dat.gui":22,"three-orbitcontrols":18,"../textures/grassDiff.jpg":8,"../textures/grassBump.png":10,"../textures/grassAO.jpg":12,"../textures/daytonight.png":14,"../models/tree.obj":16}],29:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -45626,7 +45693,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '61892' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '54232' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -45767,5 +45834,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[45,4], null)
+},{}]},{},[29,4], null)
 //# sourceMappingURL=/js.b8953913.map
