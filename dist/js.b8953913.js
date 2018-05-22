@@ -165,7 +165,7 @@ module.exports = reloadCSS;
         module.hot.dispose(reloadCSS);
         module.hot.accept(reloadCSS);
       
-},{"_css_loader":24}],22:[function(require,module,exports) {
+},{"_css_loader":24}],18:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -43919,7 +43919,7 @@ exports.gui = gui;
 exports.GUI = GUI$1;
 exports.default = index;
 //# sourceMappingURL=dat.gui.module.js.map
-},{}],18:[function(require,module,exports) {
+},{}],22:[function(require,module,exports) {
 var THREE = require('three')
 
 /**
@@ -44968,7 +44968,7 @@ Object.defineProperties( THREE.OrbitControls.prototype, {
 
 module.exports = exports.default = THREE.OrbitControls
 
-},{"three":22}],8:[function(require,module,exports) {
+},{"three":18}],8:[function(require,module,exports) {
 module.exports="/grassDiff.1af51741.jpg";
 },{}],10:[function(require,module,exports) {
 module.exports="/grassBump.e8c2c1a0.png";
@@ -45026,6 +45026,7 @@ var colours = { //global variables
 	green01: 0x424f23,
 	green02: 0x88842b,
 	green03: 0xb2b854,
+	green04: 0x277c5c,
 	brown01: 0x9b4d26,
 	brown02: 0x804e45,
 	brown03: 0xad7d67,
@@ -45036,6 +45037,15 @@ var colours = { //global variables
 	white02: 0xffdecf,
 	grey01: 0x9d8c72,
 	grey02: 0x9a9693
+};
+
+/// Light config stuff
+var shadowConfig = {
+	shadowCameraVisible: false,
+	shadowCameraNear: 750,
+	shadowCameraFar: 4000,
+	shadowCameraFov: 30,
+	shadowBias: -0.0002
 };
 
 var scene = void 0,
@@ -45049,6 +45059,15 @@ var scene = void 0,
     renderer = void 0,
     container = void 0,
     controls = void 0; //global variables
+
+var world = void 0,
+    sky = void 0,
+    ground = void 0,
+    clouds = void 0,
+    trees = void 0,
+    rocks = void 0,
+    mountain = void 0,
+    camtree = void 0; //(global variable)
 
 
 ///// CREATE SCENE, CAMERA, RENDERER ///////
@@ -45064,8 +45083,7 @@ var createScene = function createScene() {
 	scene = new THREE.Scene();
 
 	// Add a fog effect to the scene, same colour as the background colour used in stylesheet
-	// scene.fog = new THREE.Fog(colours.blue03, 1, 1000);
-	// console.log(scene.fog);
+	scene.fog = new THREE.Fog(colours.blue03, 10, 2500);
 
 	// Create the CAMERA
 	aspectRatio = WIDTH / HEIGHT; //set up aspect ratio with WIDTH + HEIGHT
@@ -45092,6 +45110,7 @@ var createScene = function createScene() {
 	//Enable shadow rendering
 	renderer.setPixelRatio(window.devicePixelRation || 1); //setting it to the pixel ratio settings of your pc or 1 if it's not defined.
 	renderer.shadowMap.enabled = true;
+	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 	// Add the DOM element of the renderer to the container we created in the HTML.
 	container = document.getElementById('world');
@@ -45101,18 +45120,21 @@ var createScene = function createScene() {
 /////// CREATE LIGHTS /////////
 
 var hemisphereLight = void 0,
-    shadowLight = void 0; //global variables
+    shadowLight = void 0,
+    ambientLight = void 0,
+    pointLight = void 0,
+    sunLight = void 0; //global variables
 
 var createLights = function createLights() {
 	// A hemisphere Light is a gradient coloured light;
 	//First param is the sky colour, second param is the ground colour, third param is the intensity of the light.
-	hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, .9);
+	hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, .0);
 
 	// A directional light shines from a specific direction.
 	//Acts like the sun, means all the rays produced are parallel.
 	shadowLight = new THREE.DirectionalLight(0xffffff, .9);
 	//Set the direction of the direcitonal light
-	shadowLight.position.set(-150, 600, -600); //150, 350, 350
+	shadowLight.position.set(-300, 600, -600); //150, 350, 350
 	shadowLight.rotation.set(0, 0, 0);
 	//Allow directional light to cast shadows
 	shadowLight.castShadow = true;
@@ -45128,9 +45150,20 @@ var createLights = function createLights() {
 	shadowLight.shadow.mapSize.width = 2048;
 	shadowLight.shadow.mapSize.height = 2048;
 
+	ambientLight = new THREE.AmbientLight(0x3f2806);
+	scene.add(ambientLight);
+	pointLight = new THREE.PointLight(0xffc95c, 1, 5000); //0xffaa00
+	pointLight.position.set(0, 500, 0);
+	scene.add(pointLight);
+	sunLight = new THREE.SpotLight(0xffffff, 0.3, 0, Math.PI / 2);
+	sunLight.position.set(1000, 2000, 1000); //1k, 2k, 1k
+	sunLight.castShadow = true;
+	sunLight.shadow = new THREE.LightShadow(new THREE.PerspectiveCamera(shadowConfig.shadowCameraFov, 1, shadowConfig.shadowCameraNear, shadowConfig.shadowCameraFar));
+	sunLight.shadow.bias = shadowConfig.shadowBias;
+	scene.add(sunLight);
 	// To activate the lights, just add them to the scene
-	scene.add(hemisphereLight);
-	scene.add(shadowLight);
+	// scene.add(hemisphereLight);
+	// scene.add(shadowLight);
 };
 
 THREE.ImageUtils.crossOrigin = ''; //Allow CORS
@@ -45255,17 +45288,29 @@ var defineCloudGrp = function defineCloudGrp() {
 var definePineTree = function definePineTree() {
 	this.mesh = new THREE.Object3D();
 	var pineTrunkGeo = new THREE.BoxGeometry(2, 13, 2);
-	var pineTrunkMat = new THREE.MeshStandardMaterial({ color: colours.brown01, flatShading: true });
+	var pineTrunkMat = new THREE.MeshStandardMaterial({
+		color: colours.brown01,
+		flatShading: true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0 });
 	var pineTrunk = new THREE.Mesh(pineTrunkGeo, pineTrunkMat);
 	pineTrunk.castShadow = true;
 	pineTrunk.receiveShadow = true;
+	pineTrunk.scale.set(1.5, 1.5, 1.5);
 	this.mesh.add(pineTrunk);
 	var pineTopGeo = new THREE.ConeGeometry(6, 14, 8);
-	var pineTopMat = new THREE.MeshStandardMaterial({ color: colours.green02, flatShading: true });
+	var pineTopMat = new THREE.MeshStandardMaterial({
+		color: colours.green04,
+		flatShading: true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0 });
 	var pineTreeTop = new THREE.Mesh(pineTopGeo, pineTopMat);
 	pineTreeTop.castShadow = true;
 	pineTreeTop.receiveShadow = true;
-	pineTreeTop.position.y = 3;
+	pineTreeTop.position.y = 10;
+	pineTreeTop.scale.set(1.5, 1.5, 1.5);
 	this.mesh.add(pineTreeTop);
 };
 
@@ -45273,18 +45318,30 @@ var definePineTree = function definePineTree() {
 var defineRoundTree = function defineRoundTree() {
 	this.mesh = new THREE.Object3D();
 	var roundTrunkGeo = new THREE.BoxGeometry(2, 20, 2);
-	var roundTrunkMat = new THREE.MeshStandardMaterial({ color: colours.brown02, flatShading: true });
+	var roundTrunkMat = new THREE.MeshStandardMaterial({
+		color: colours.brown02,
+		flatShading: true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0 });
 	var roundTrunk = new THREE.Mesh(roundTrunkGeo, roundTrunkMat);
 	roundTrunk.castShadow = true;
 	roundTrunk.receiveShadow = true;
+	roundTrunk.scale.set(1.5, 1.5, 1.5);
 	this.mesh.add(roundTrunk);
 
 	var roundTopGeo = new THREE.SphereGeometry(7, 7, 8);
-	var roundTopMat = new THREE.MeshStandardMaterial({ color: colours.green02, flatShading: true });
+	var roundTopMat = new THREE.MeshStandardMaterial({
+		color: colours.green03,
+		flatShading: true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0 });
 	var roundTreeTop = new THREE.Mesh(roundTopGeo, roundTopMat);
 	roundTreeTop.castShadow = true;
 	roundTreeTop.receiveShadow = true;
-	roundTreeTop.position.y = 5;
+	roundTreeTop.position.y = 10;
+	roundTreeTop.scale.set(1.5, 1.5, 1.5);
 	this.mesh.add(roundTreeTop);
 };
 
@@ -45300,7 +45357,11 @@ var defineAppleTreeTop = function defineAppleTreeTop() {
 
 	//Create a material; a simple white material
 	var appleTreeTopMat = new THREE.MeshPhongMaterial({
-		color: colours.green02
+		color: colours.green01,
+		flatShading: true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0
 	});
 
 	// Duplicate the geometry a random number of times
@@ -45330,7 +45391,12 @@ var defineAppleTreeTop = function defineAppleTreeTop() {
 var defineAppleTree = function defineAppleTree() {
 	this.mesh = new THREE.Object3D();
 	var appleTreeTrunkGeo = new THREE.BoxGeometry(2, 20, 2);
-	var appleTreeTrunkMat = new THREE.MeshStandardMaterial({ color: colours.brown02, flatShading: true });
+	var appleTreeTrunkMat = new THREE.MeshStandardMaterial({
+		color: colours.brown03,
+		flatShading: true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0 });
 	var appleTreeTrunk = new THREE.Mesh(appleTreeTrunkGeo, appleTreeTrunkMat);
 	appleTreeTrunk.castShadow = true;
 	appleTreeTrunk.receiveShadow = true;
@@ -45355,7 +45421,11 @@ var defineSpottyTreeTop = function defineSpottyTreeTop() {
 
 	//Create a material; a simple white material
 	var spottyTreeTopMat = new THREE.MeshPhongMaterial({
-		color: colours.green02, flatShading: true });
+		color: colours.green02,
+		flatShading: true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0 });
 
 	// Duplicate the geometry a random number of times
 	var numOfBlocs = 15 + Math.floor(Math.random() * 3);
@@ -45384,7 +45454,12 @@ var defineSpottyTreeTop = function defineSpottyTreeTop() {
 var defineSpottyTree = function defineSpottyTree() {
 	this.mesh = new THREE.Object3D();
 	var spottyTreeTrunkGeo = new THREE.BoxGeometry(4, 20, 4);
-	var spottyTreeTrunkMat = new THREE.MeshStandardMaterial({ color: colours.brown02, flatShading: true });
+	var spottyTreeTrunkMat = new THREE.MeshStandardMaterial({
+		color: colours.orange01,
+		flatShading: true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0 });
 	var spottyTreeTrunk = new THREE.Mesh(spottyTreeTrunkGeo, spottyTreeTrunkMat);
 	spottyTreeTrunk.castShadow = true;
 	spottyTreeTrunk.receiveShadow = true;
@@ -45399,7 +45474,12 @@ var defineSpottyTree = function defineSpottyTree() {
 var defineRock = function defineRock() {
 	this.mesh = new THREE.Object3D();
 	var rockGeo = new THREE.BoxGeometry(3, 3, 3);
-	var rockMat = new THREE.MeshStandardMaterial({ color: colours.grey02, flatShading: true });
+	var rockMat = new THREE.MeshStandardMaterial({
+		color: colours.grey02,
+		flatShading: true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0 });
 	var numOfBlocs = Math.floor(Math.random() * 3);
 	// Loop to create duplicates, 0-3 duplicates.
 	for (var i = 1; i < numOfBlocs; i++) {
@@ -45419,12 +45499,12 @@ var defineRock = function defineRock() {
 	}
 };
 
-var world = void 0,
-    sky = void 0,
-    ground = void 0,
-    clouds = void 0,
-    trees = void 0,
-    rocks = void 0; //(global variable)
+///// Random Lat Long Function /////
+
+function getRandomInRange(from, to, fixed) {
+	return (Math.random() * (to - from) + from).toFixed(fixed) * 1;
+	// .toFixed() returns string, so ' * 1' is a trick to convert to number
+}
 
 //////// DEFINE WORLD //////////
 var defineWorld = function defineWorld() {
@@ -45437,56 +45517,49 @@ var defineWorld = function defineWorld() {
 	// Add the mesh of the sea to the scene
 	this.mesh.add(ground.mesh);
 
+	////// CREATE CAMERA TREE ////////
+
+	camtree = new definePineTree();
+	camtree.mesh.position.y = 305;
+	camera.lookAt(camtree.mesh.position);
+
 	/////////////////// CREATE RANDOM FUCKING TREES ///////////////////
 
-
-	for (var i = 0; i < 50; i++) {
+	for (var i = 0; i < 100; i++) {
 		var pineTree = new definePineTree();
 		var roundTree = new defineRoundTree();
 		var appleTree = new defineAppleTree();
 		var spottyTree = new defineSpottyTree();
 		var treesArray = [pineTree, roundTree, appleTree, spottyTree];
 		trees = treesArray[i % treesArray.length];
-		var theta = (Math.random() - 0.5) * 4 * Math.PI;
-		var phi = (Math.random() - 0.5) * 2 * Math.PI;
-		var tx = 300 * Math.sin(theta) * Math.cos(phi);
-		var ty = 300 * Math.sin(theta) * Math.sin(phi);
-		var tz = 300 * Math.cos(theta);
-		trees.mesh.position.x = tx;
-		trees.mesh.position.y = ty;
-		trees.mesh.position.z = tz;
 
-		var angz = Math.atan2(ty, tx);
-		var angy = Math.atan2(tx, tz);
-		var angx = Math.atan2(tz, ty);
-		//
-		// trees.mesh.rotation.x = (angx);
-		// trees.mesh.rotation.y = (angy);
-		// trees.mesh.rotation.z = (angz);
+		// generate random lat long coordinates
+		var lat = getRandomInRange(-180, 180, 3);
+		var long = getRandomInRange(-180, 180, 3);
 
+		var latRad = lat * (Math.PI / 180);
+		var longRad = -long * (Math.PI / 180);
 
-		console.log('X:', trees.mesh.position.x);
-		console.log('Y:', trees.mesh.position.y);
-		console.log('Z:', trees.mesh.position.z);
+		trees.mesh.position.x = 304 * Math.cos(latRad) * Math.cos(longRad);
+		trees.mesh.position.y = 304 * Math.sin(latRad);
+		trees.mesh.position.z = 304 * Math.cos(latRad) * Math.sin(longRad);
+
+		trees.mesh.rotation.set(0.0, -longRad, latRad - Math.PI * 0.5);
+
 		this.mesh.add(trees.mesh);
 	}
-	// trees = new defineSpottyTree();
-	// trees.mesh.position.set(0, 305, 0);
-	camera.lookAt(trees.mesh.position);
-	// this.mesh.add(trees.mesh);
-
 
 	///// CREATE RANDOM ROCKS //////
-	// let numOfRocks = 500;
-	// for (let i = 0; i < numOfRocks; i++) {
-	// 	rocks = new defineRock();
-	// 	let theta = (Math.random() - 0.5)*4*Math.PI;
-	// 	let phi = (Math.random() - 0.5)*2*Math.PI;
-	// 	rocks.mesh.position.x = 295 * Math.sin(theta)* Math.cos(phi);
-	// 	rocks.mesh.position.y =  295 * Math.sin(theta)* Math.sin(phi);
-	// 	rocks.mesh.position.z =  295 * Math.cos(theta) - 5;
-	// 	this.mesh.add(rocks.mesh);
-	// }
+	var numOfRocks = 500;
+	for (var _i = 0; _i < numOfRocks; _i++) {
+		rocks = new defineRock();
+		var theta = (Math.random() - 0.5) * 4 * Math.PI;
+		var phi = (Math.random() - 0.5) * 2 * Math.PI;
+		rocks.mesh.position.x = 295 * Math.sin(theta) * Math.cos(phi);
+		rocks.mesh.position.y = 295 * Math.sin(theta) * Math.sin(phi);
+		rocks.mesh.position.z = 295 * Math.cos(theta) - 5;
+		this.mesh.add(rocks.mesh);
+	}
 };
 
 //// DEFINE SKY //////
@@ -45511,17 +45584,17 @@ var defineSky = function defineSky() {
 	this.mesh.add(skyBox);
 
 	//////// CREATE MULTIPLE INSTANCES OF CLOUDS ///////////
-	//
-	// let numOfClouds = 200;
-	// for (let i = 0; i < numOfClouds; i++) {
-	// 	clouds = new defineCloud();
-	// 	let theta = (Math.random() - 0.5)*4*Math.PI;
-	// 	let phi = (Math.random() - 0.5)*2*Math.PI;
-	// 	clouds.mesh.position.x = 600 * Math.sin(theta)* Math.cos(phi);
-	// 	clouds.mesh.position.y =  600 * Math.sin(theta)* Math.sin(phi);
-	// 	clouds.mesh.position.z =  600 * Math.cos(theta) - 5;
-	// 	this.mesh.add(clouds.mesh);
-	// }
+
+	var numOfClouds = 200;
+	for (var i = 0; i < numOfClouds; i++) {
+		clouds = new defineCloud();
+		var theta = (Math.random() - 0.5) * 4 * Math.PI;
+		var phi = (Math.random() - 0.5) * 2 * Math.PI;
+		clouds.mesh.position.x = 700 * Math.sin(theta) * Math.cos(phi);
+		clouds.mesh.position.y = 700 * Math.sin(theta) * Math.sin(phi);
+		clouds.mesh.position.z = 700 * Math.cos(theta) - 5;
+		this.mesh.add(clouds.mesh);
+	}
 };
 
 //////// DEFINE MOUNTAINS /////
@@ -45550,8 +45623,6 @@ var defineMountain = function defineMountain() {
 			ang: Math.random() * Math.PI * 2,
 			// a random distance
 			amp: 10 + Math.random() * 15
-			// a random speed between 0.016 and 0.048 radians / frame
-			// speed:0.016 + Math.random()*0.032
 		});
 	};
 	var mat = new THREE.MeshPhongMaterial({
@@ -45595,7 +45666,7 @@ function createWorld() {
 
 ////////// CREATING THE SLOPPY MOUNTAIN ////////////
 
-var mountain = void 0; //(global variable)
+
 function createMountain() {
 	mountain = new defineMountain();
 	scene.add(mountain.mesh);
@@ -45608,7 +45679,7 @@ function createSky() {
 	scene.add(sky.mesh);
 }
 
-//TODO: fix trees!! fix camera
+//TODO: offset clouds + sky, animate lights day + night, grass? alpha?
 
 
 ////////// INIT FUNCTION !!!!!!! ////////
@@ -45707,6 +45778,11 @@ function addHelpers() {
 	//8. Grid Helper
 	var gridHelper = new THREE.GridHelper(1000, 40, colours.red01); // 500 is grid size, 20 is grid step
 	scene.add(gridHelper);
+
+	//9. sunLight Helper
+	var shadowCameraHelper = new THREE.CameraHelper(sunLight.shadow.camera);
+	shadowCameraHelper.visible = shadowConfig.shadowCameraVisible;
+	scene.add(shadowCameraHelper);
 }
 
 ///// DOM BULLSHIT //////
@@ -45723,7 +45799,7 @@ window.addEventListener('resize', handleWindowResize, false);
 // 	function(object){
 // 		scene.add(object)
 // 	})
-},{"../css/index.css":6,"three":22,"dat.gui":20,"three-orbitcontrols":18,"../textures/grassDiff.jpg":8,"../textures/grassBump.png":10,"../textures/grassAO.jpg":12,"../textures/daytonight.png":14,"../models/tree.obj":16}],34:[function(require,module,exports) {
+},{"../css/index.css":6,"three":18,"dat.gui":20,"three-orbitcontrols":22,"../textures/grassDiff.jpg":8,"../textures/grassBump.png":10,"../textures/grassAO.jpg":12,"../textures/daytonight.png":14,"../models/tree.obj":16}],32:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -45752,7 +45828,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '64677' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '50701' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -45893,5 +45969,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[34,4], null)
+},{}]},{},[32,4], null)
 //# sourceMappingURL=/js.b8953913.map

@@ -17,6 +17,7 @@ const colours = {  //global variables
   green01: 0x424f23,
   green02: 0x88842b,
   green03: 0xb2b854,
+	green04: 0x277c5c,
   brown01: 0x9b4d26,
   brown02: 0x804e45,
 	brown03: 0xad7d67,
@@ -29,8 +30,18 @@ const colours = {  //global variables
 	grey02: 0x9a9693
 };
 
+/// Light config stuff
+let shadowConfig = {
+	shadowCameraVisible: false,
+	shadowCameraNear: 750,
+	shadowCameraFar: 4000,
+	shadowCameraFov: 30,
+	shadowBias: -0.0002
+};
+
 let scene, camera, fieldOfView, aspectRatio, nearPlane, farPlane, HEIGHT, WIDTH, renderer, container, controls;  //global variables
 
+let world, sky, ground, clouds, trees, rocks, mountain, camtree; //(global variable)
 
 
 ///// CREATE SCENE, CAMERA, RENDERER ///////
@@ -46,8 +57,8 @@ const createScene = () => {
   scene = new THREE.Scene();
 
   // Add a fog effect to the scene, same colour as the background colour used in stylesheet
-  // scene.fog = new THREE.Fog(colours.blue03, 1, 1000);
-  // console.log(scene.fog);
+  scene.fog = new THREE.Fog(colours.blue03, 10, 2500);
+
 
   // Create the CAMERA
   aspectRatio = WIDTH / HEIGHT; //set up aspect ratio with WIDTH + HEIGHT
@@ -79,6 +90,7 @@ renderer.setSize(WIDTH, HEIGHT);
 //Enable shadow rendering
 renderer.setPixelRatio(window.devicePixelRation ||  1); //setting it to the pixel ratio settings of your pc or 1 if it's not defined.
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // Add the DOM element of the renderer to the container we created in the HTML.
 container = document.getElementById('world');
@@ -87,18 +99,18 @@ container.appendChild(renderer.domElement);
 
 /////// CREATE LIGHTS /////////
 
-let hemisphereLight, shadowLight; //global variables
+let hemisphereLight, shadowLight, ambientLight, pointLight, sunLight; //global variables
 
 const createLights = () => {
   // A hemisphere Light is a gradient coloured light;
   //First param is the sky colour, second param is the ground colour, third param is the intensity of the light.
-  hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9);
+  hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .0);
 
   // A directional light shines from a specific direction.
   //Acts like the sun, means all the rays produced are parallel.
   shadowLight = new THREE.DirectionalLight(0xffffff, .9);
   //Set the direction of the direcitonal light
-  shadowLight.position.set(-150, 600, -600); //150, 350, 350
+  shadowLight.position.set(-300, 600, -600); //150, 350, 350
 	shadowLight.rotation.set(0, 0, 0)
   //Allow directional light to cast shadows
   shadowLight.castShadow = true;
@@ -114,9 +126,22 @@ const createLights = () => {
   shadowLight.shadow.mapSize.width = 2048;
   shadowLight.shadow.mapSize.height = 2048;
 
+
+
+	ambientLight = new THREE.AmbientLight( 0x3f2806 );
+	scene.add( ambientLight );
+	pointLight = new THREE.PointLight( 0xffc95c, 1, 5000 );   //0xffaa00
+	pointLight.position.set(0, 500, 0);
+	scene.add( pointLight );
+	sunLight = new THREE.SpotLight( 0xffffff, 0.3, 0, Math.PI/2 );
+	sunLight.position.set( 1000, 2000, 1000 ); //1k, 2k, 1k
+	sunLight.castShadow = true;
+	sunLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( shadowConfig.shadowCameraFov, 1, shadowConfig.shadowCameraNear, shadowConfig.shadowCameraFar ) );
+	sunLight.shadow.bias = shadowConfig.shadowBias;
+	scene.add( sunLight );
   // To activate the lights, just add them to the scene
-  scene.add(hemisphereLight);
-  scene.add(shadowLight);
+  // scene.add(hemisphereLight);
+  // scene.add(shadowLight);
 
 }
 
@@ -242,17 +267,29 @@ const defineCloudGrp = function() { //(global variable)
 const definePineTree = function() {
 	this.mesh = new THREE.Object3D();
 	let pineTrunkGeo = new THREE.BoxGeometry(2, 13, 2);
-	let pineTrunkMat = new THREE.MeshStandardMaterial({color: colours.brown01, flatShading: true});
+	let pineTrunkMat = new THREE.MeshStandardMaterial({
+		color: colours.brown01,
+		flatShading: true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0});
 	let pineTrunk = new THREE.Mesh(pineTrunkGeo, pineTrunkMat);
 	pineTrunk.castShadow = true;
 	pineTrunk.receiveShadow = true;
+	pineTrunk.scale.set(1.5,1.5,1.5);
 	this.mesh.add(pineTrunk);
 	let pineTopGeo = new THREE.ConeGeometry( 6, 14, 8 );
-	let pineTopMat = new THREE.MeshStandardMaterial({color:colours.green02, flatShading:true})
+	let pineTopMat = new THREE.MeshStandardMaterial({
+		color:colours.green04,
+		flatShading:true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0})
 	let pineTreeTop = new THREE.Mesh(pineTopGeo, pineTopMat);
 	pineTreeTop.castShadow = true;
 	pineTreeTop.receiveShadow = true;
-	pineTreeTop.position.y = 3;
+	pineTreeTop.position.y = 10;
+	pineTreeTop.scale.set(1.5,1.5,1.5);
 	this.mesh.add(pineTreeTop);
 }
 
@@ -260,19 +297,31 @@ const definePineTree = function() {
 const defineRoundTree = function() {
 	this.mesh = new THREE.Object3D();
 	let roundTrunkGeo = new THREE.BoxGeometry(2, 20, 2);
-	let roundTrunkMat = new THREE.MeshStandardMaterial({color: colours.brown02, flatShading: true});
+	let roundTrunkMat = new THREE.MeshStandardMaterial({
+		color: colours.brown02,
+		 flatShading: true,
+		 metalness: 0.0,
+		 reflectivity: 0.0,
+		 shininess: 0.0});
 	let roundTrunk = new THREE.Mesh(roundTrunkGeo, roundTrunkMat);
 	roundTrunk.castShadow = true;
 	roundTrunk.receiveShadow = true;
+	roundTrunk.scale.set(1.5,1.5,1.5);
 	this.mesh.add(roundTrunk);
 
 
 	let roundTopGeo = new THREE.SphereGeometry( 7, 7, 8 );
-	let roundTopMat = new THREE.MeshStandardMaterial({color:colours.green02, flatShading:true})
+	let roundTopMat = new THREE.MeshStandardMaterial({
+		color:colours.green03,
+		flatShading:true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0})
 	let roundTreeTop = new THREE.Mesh(roundTopGeo, roundTopMat);
 	roundTreeTop.castShadow = true;
 	roundTreeTop.receiveShadow = true;
-	roundTreeTop.position.y = 5;
+	roundTreeTop.position.y = 10;
+	roundTreeTop.scale.set(1.5,1.5,1.5);
 	this.mesh.add(roundTreeTop);
 }
 
@@ -288,7 +337,11 @@ const defineAppleTreeTop = function() {
 
   //Create a material; a simple white material
   let appleTreeTopMat = new THREE.MeshPhongMaterial({
-    color:colours.green02,
+    color:colours.green01,
+		flatShading: true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0
   })
 
   // Duplicate the geometry a random number of times
@@ -318,7 +371,12 @@ const defineAppleTreeTop = function() {
 const defineAppleTree = function() {
 	this.mesh = new THREE.Object3D();
 	let appleTreeTrunkGeo = new THREE.BoxGeometry(2, 20, 2);
-	let appleTreeTrunkMat = new THREE.MeshStandardMaterial({color: colours.brown02, flatShading: true});
+	let appleTreeTrunkMat = new THREE.MeshStandardMaterial({
+		color: colours.brown03,
+		flatShading: true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0});
 	let appleTreeTrunk = new THREE.Mesh(appleTreeTrunkGeo, appleTreeTrunkMat);
 	appleTreeTrunk.castShadow = true;
 	appleTreeTrunk.receiveShadow = true;
@@ -343,7 +401,11 @@ const defineSpottyTreeTop = function() {
 
   //Create a material; a simple white material
   let spottyTreeTopMat = new THREE.MeshPhongMaterial({
-    color:colours.green02,flatShading: true});
+    color:colours.green02,
+		flatShading: true,
+		metalness: 0.0,
+		reflectivity: 0.0,
+		shininess: 0.0});
 
   // Duplicate the geometry a random number of times
   let numOfBlocs = 15+Math.floor(Math.random()*3);
@@ -372,7 +434,12 @@ const defineSpottyTreeTop = function() {
 const defineSpottyTree = function() {
 	this.mesh = new THREE.Object3D();
 	let spottyTreeTrunkGeo = new THREE.BoxGeometry(4, 20, 4);
-	let spottyTreeTrunkMat = new THREE.MeshStandardMaterial({color: colours.brown02, flatShading: true});
+	let spottyTreeTrunkMat = new THREE.MeshStandardMaterial({
+		color: colours.orange01,
+		 flatShading: true,
+		 metalness: 0.0,
+		 reflectivity: 0.0,
+		 shininess: 0.0});
 	let spottyTreeTrunk = new THREE.Mesh(spottyTreeTrunkGeo, spottyTreeTrunkMat);
 	spottyTreeTrunk.castShadow = true;
 	spottyTreeTrunk.receiveShadow = true;
@@ -388,7 +455,12 @@ const defineSpottyTree = function() {
 const defineRock = function () {
 	this.mesh = new THREE.Object3D();
 	let rockGeo = new THREE.BoxGeometry(3, 3, 3);
-	let rockMat = new THREE.MeshStandardMaterial({color:colours.grey02, flatShading:true});
+	let rockMat = new THREE.MeshStandardMaterial({
+		color:colours.grey02,
+		 flatShading:true,
+		 metalness: 0.0,
+		 reflectivity: 0.0,
+		 shininess: 0.0});
 	let numOfBlocs = Math.floor(Math.random()*3);
 	// Loop to create duplicates, 0-3 duplicates.
 	for (let i = 1; i < numOfBlocs; i++){
@@ -409,7 +481,13 @@ const defineRock = function () {
 }
 
 
-let world, sky, ground, clouds, trees, rocks; //(global variable)
+///// Random Lat Long Function /////
+
+function getRandomInRange(from, to, fixed) {
+    return (Math.random() * (to - from) + from).toFixed(fixed) * 1;
+    // .toFixed() returns string, so ' * 1' is a trick to convert to number
+}
+
 
 //////// DEFINE WORLD //////////
 const defineWorld = function(){
@@ -422,57 +500,50 @@ const defineWorld = function(){
 	// Add the mesh of the sea to the scene
 	this.mesh.add(ground.mesh);
 
+////// CREATE CAMERA TREE ////////
+
+	camtree = new definePineTree();
+	camtree.mesh.position.y = 305;
+	camera.lookAt(camtree.mesh.position);
 
 /////////////////// CREATE RANDOM FUCKING TREES ///////////////////
 
+for (let i = 0; i < 100; i++) {
+        let pineTree = new definePineTree();
+        let roundTree = new defineRoundTree();
+        let appleTree = new defineAppleTree();
+        let spottyTree = new defineSpottyTree();
+        let treesArray = [pineTree, roundTree, appleTree, spottyTree];
+        trees = treesArray[i % treesArray.length];
 
-	for (let i = 0; i < 50; i++) {
-		let pineTree = new definePineTree();
-		let roundTree = new defineRoundTree();
-		let appleTree = new defineAppleTree();
-		let spottyTree = new defineSpottyTree();
-		let treesArray = [pineTree, roundTree, appleTree, spottyTree];
-  	trees = treesArray[i % treesArray.length];
-		let theta = (Math.random() - 0.5)*4*Math.PI;
-		let phi = (Math.random() - 0.5)*2*Math.PI;
-		let tx = 300 * Math.sin(theta)* Math.cos(phi);
-		let ty =  300 * Math.sin(theta)* Math.sin(phi);
-		let tz =  300 * Math.cos(theta);
-		trees.mesh.position.x = tx
-		trees.mesh.position.y = ty
-		trees.mesh.position.z = tz
+        // generate random lat long coordinates
+        let lat = getRandomInRange(-180, 180, 3)
+        let long = getRandomInRange(-180, 180, 3)
 
-		let angz = Math.atan2(ty, tx)
-		let angy = Math.atan2(tx, tz)
-		let angx = Math.atan2(tz, ty)
-		//
-		// trees.mesh.rotation.x = (angx);
-		// trees.mesh.rotation.y = (angy);
-		// trees.mesh.rotation.z = (angz);
+        let latRad = lat * (Math.PI / 180);
+        let longRad = -long * (Math.PI / 180);
 
+        trees.mesh.position.x = 304 * Math.cos(latRad) * Math.cos(longRad);
+        trees.mesh.position.y = 304 * Math.sin(latRad);
+        trees.mesh.position.z = 304 * Math.cos(latRad) * Math.sin(longRad);
 
-		console.log('X:', trees.mesh.position.x);
-		console.log('Y:', trees.mesh.position.y);
-		console.log('Z:', trees.mesh.position.z);
-		this.mesh.add(trees.mesh)
-}
-	// trees = new defineSpottyTree();
-	// trees.mesh.position.set(0, 305, 0);
-	camera.lookAt(trees.mesh.position);
-	// this.mesh.add(trees.mesh);
+        trees.mesh.rotation.set(0.0, -longRad, latRad - Math.PI * 0.5);
+
+        this.mesh.add(trees.mesh)
+    }
 
 
 ///// CREATE RANDOM ROCKS //////
-	// let numOfRocks = 500;
-	// for (let i = 0; i < numOfRocks; i++) {
-	// 	rocks = new defineRock();
-	// 	let theta = (Math.random() - 0.5)*4*Math.PI;
-	// 	let phi = (Math.random() - 0.5)*2*Math.PI;
-	// 	rocks.mesh.position.x = 295 * Math.sin(theta)* Math.cos(phi);
-	// 	rocks.mesh.position.y =  295 * Math.sin(theta)* Math.sin(phi);
-	// 	rocks.mesh.position.z =  295 * Math.cos(theta) - 5;
-	// 	this.mesh.add(rocks.mesh);
-	// }
+	let numOfRocks = 500;
+	for (let i = 0; i < numOfRocks; i++) {
+		rocks = new defineRock();
+		let theta = (Math.random() - 0.5)*4*Math.PI;
+		let phi = (Math.random() - 0.5)*2*Math.PI;
+		rocks.mesh.position.x = 295 * Math.sin(theta)* Math.cos(phi);
+		rocks.mesh.position.y =  295 * Math.sin(theta)* Math.sin(phi);
+		rocks.mesh.position.z =  295 * Math.cos(theta) - 5;
+		this.mesh.add(rocks.mesh);
+	}
 }
 
 //// DEFINE SKY //////
@@ -497,17 +568,17 @@ const defineSky = function() {
 	    this.mesh.add(skyBox);
 
 			//////// CREATE MULTIPLE INSTANCES OF CLOUDS ///////////
-				//
-				// let numOfClouds = 200;
-				// for (let i = 0; i < numOfClouds; i++) {
-				// 	clouds = new defineCloud();
-				// 	let theta = (Math.random() - 0.5)*4*Math.PI;
-				// 	let phi = (Math.random() - 0.5)*2*Math.PI;
-				// 	clouds.mesh.position.x = 600 * Math.sin(theta)* Math.cos(phi);
-				// 	clouds.mesh.position.y =  600 * Math.sin(theta)* Math.sin(phi);
-				// 	clouds.mesh.position.z =  600 * Math.cos(theta) - 5;
-				// 	this.mesh.add(clouds.mesh);
-				// }
+
+				let numOfClouds = 200;
+				for (let i = 0; i < numOfClouds; i++) {
+					clouds = new defineCloud();
+					let theta = (Math.random() - 0.5)*4*Math.PI;
+					let phi = (Math.random() - 0.5)*2*Math.PI;
+					clouds.mesh.position.x = 700 * Math.sin(theta)* Math.cos(phi);
+					clouds.mesh.position.y =  700 * Math.sin(theta)* Math.sin(phi);
+					clouds.mesh.position.z =  700 * Math.cos(theta) - 5;
+					this.mesh.add(clouds.mesh);
+				}
 }
 
 
@@ -537,8 +608,6 @@ const defineMountain = function(){
 										 ang:Math.random()*Math.PI*2,
 										 // a random distance
 										 amp:10 + Math.random()*15,
-										 // a random speed between 0.016 and 0.048 radians / frame
-										 // speed:0.016 + Math.random()*0.032
 										});
 	};
 	var mat = new THREE.MeshPhongMaterial({
@@ -589,7 +658,7 @@ function createWorld () {
 
 ////////// CREATING THE SLOPPY MOUNTAIN ////////////
 
-let mountain; //(global variable)
+
 function createMountain() {
 	mountain = new defineMountain();
 	scene.add(mountain.mesh);
@@ -606,7 +675,7 @@ function createSky() {
 
 
 
-//TODO: fix trees!! fix camera
+//TODO: offset clouds + sky, animate lights day + night, grass? alpha?
 
 
 
@@ -720,6 +789,11 @@ function addHelpers() {
 	 //8. Grid Helper
 	 let gridHelper = new THREE.GridHelper(1000, 40, colours.red01); // 500 is grid size, 20 is grid step
 	 scene.add(gridHelper);
+
+	 //9. sunLight Helper
+	 let shadowCameraHelper = new THREE.CameraHelper( sunLight.shadow.camera );
+				shadowCameraHelper.visible = shadowConfig.shadowCameraVisible;
+				scene.add( shadowCameraHelper );
 
 }
 
