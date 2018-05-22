@@ -165,7 +165,7 @@ module.exports = reloadCSS;
         module.hot.dispose(reloadCSS);
         module.hot.accept(reloadCSS);
       
-},{"_css_loader":24}],20:[function(require,module,exports) {
+},{"_css_loader":24}],22:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -41434,7 +41434,7 @@ exports.Projector = Projector;
 exports.CanvasRenderer = CanvasRenderer;
 exports.SceneUtils = SceneUtils;
 exports.LensFlare = LensFlare;
-},{}],18:[function(require,module,exports) {
+},{}],20:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -43919,7 +43919,7 @@ exports.gui = gui;
 exports.GUI = GUI$1;
 exports.default = index;
 //# sourceMappingURL=dat.gui.module.js.map
-},{}],22:[function(require,module,exports) {
+},{}],18:[function(require,module,exports) {
 var THREE = require('three')
 
 /**
@@ -44968,7 +44968,7 @@ Object.defineProperties( THREE.OrbitControls.prototype, {
 
 module.exports = exports.default = THREE.OrbitControls
 
-},{"three":20}],8:[function(require,module,exports) {
+},{"three":22}],8:[function(require,module,exports) {
 module.exports="/grassDiff.1af51741.jpg";
 },{}],10:[function(require,module,exports) {
 module.exports="/grassBump.e8c2c1a0.png";
@@ -45172,31 +45172,6 @@ var defineGround = function defineGround() {
 		shininess: 0.0
 	});
 	console.log(mat);
-	// important: by merging vertices we ensure the continuity of the waves
-	// geo.mergeVertices();
-	//
-	// // get the vertices
-	// let allVerts = geo.vertices.length;
-	//
-	// // create an array to store new data associated to each vertex
-	// this.waves = [];
-	//
-	// for (let i=0; i<allVerts; i++){
-	// // get each vertex
-	// let vert = geom.vertices[i];
-	//
-	// // store some data associated to it
-	// this.waves.push({y:vert.y,
-	// 								 x:vert.x,
-	// 								 z:vert.z,
-	// 								 // a random angle
-	// 								 ang:Math.random()*Math.PI*2,
-	// 								 // a random distance
-	// 								 amp:5 + Math.random()*15,
-	// 								 // a random speed between 0.016 and 0.048 radians / frame
-	// 								 speed:0.016 + Math.random()*0.032
-	// 								});
-
 	this.mesh = new THREE.Mesh(geo, mat);
 	this.mesh.receiveShadow = true;
 	this.mesh.castShadow = false;
@@ -45456,12 +45431,11 @@ var defineWorld = function defineWorld() {
 	this.mesh = new THREE.Object3D();
 
 	////////// CREATING AN INSTANCE OF GROUND /////////////
-	// ground = new defineGround();
-	// ground.mesh.position.y= 0; // -150
-	// ground.mesh.position.z= 0; //150
-	// // Add the mesh of the sea to the scene
-	// this.mesh.add(ground.mesh);
-
+	ground = new defineGround();
+	ground.mesh.position.y = 0; // -150
+	ground.mesh.position.z = 0; //150
+	// Add the mesh of the sea to the scene
+	this.mesh.add(ground.mesh);
 
 	/////////////////// CREATE RANDOM FUCKING TREES ///////////////////
 
@@ -45475,12 +45449,25 @@ var defineWorld = function defineWorld() {
 		trees = treesArray[i % treesArray.length];
 		var theta = (Math.random() - 0.5) * 4 * Math.PI;
 		var phi = (Math.random() - 0.5) * 2 * Math.PI;
-		trees.mesh.position.x = 300 * Math.sin(theta) * Math.cos(phi);
-		trees.mesh.position.y = 300 * Math.sin(theta) * Math.sin(phi);
-		trees.mesh.position.z = 300 * Math.cos(theta);
-		// trees.mesh.rotation.x = theta;
-		// trees.mesh.rotation.y = theta;
-		// trees.mesh.rotation.z = theta;
+		var tx = 300 * Math.sin(theta) * Math.cos(phi);
+		var ty = 300 * Math.sin(theta) * Math.sin(phi);
+		var tz = 300 * Math.cos(theta);
+		trees.mesh.position.x = tx;
+		trees.mesh.position.y = ty;
+		trees.mesh.position.z = tz;
+
+		var angz = Math.atan2(ty, tx);
+		var angy = Math.atan2(tx, tz);
+		var angx = Math.atan2(tz, ty);
+		//
+		// trees.mesh.rotation.x = (angx);
+		// trees.mesh.rotation.y = (angy);
+		// trees.mesh.rotation.z = (angz);
+
+
+		console.log('X:', trees.mesh.position.x);
+		console.log('Y:', trees.mesh.position.y);
+		console.log('Z:', trees.mesh.position.z);
 		this.mesh.add(trees.mesh);
 	}
 	// trees = new defineSpottyTree();
@@ -45537,11 +45524,81 @@ var defineSky = function defineSky() {
 	// }
 };
 
+//////// DEFINE MOUNTAINS /////
+var defineMountain = function defineMountain() {
+	var geo = new THREE.CylinderGeometry(300, 50, 200, 40, 10);
+	geo.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+
+	// important: by merging vertices we ensure the continuity of the waves
+	geo.mergeVertices();
+
+	// get the vertices
+	var l = geo.vertices.length;
+
+	// create an array to store new data associated to each vertex
+	this.slopes = [];
+
+	for (var i = 0; i < l; i++) {
+		// get each vertex
+		var v = geo.vertices[i];
+
+		// store some data associated to it
+		this.slopes.push({ y: v.y,
+			x: v.x,
+			z: v.z,
+			// a random angle
+			ang: Math.random() * Math.PI * 2,
+			// a random distance
+			amp: 10 + Math.random() * 15
+			// a random speed between 0.016 and 0.048 radians / frame
+			// speed:0.016 + Math.random()*0.032
+		});
+	};
+	var mat = new THREE.MeshPhongMaterial({
+		color: colours.grey01,
+		flatShading: true
+	});
+
+	this.mesh = new THREE.Mesh(geo, mat);
+	this.mesh.receiveShadow = true;
+	this.mesh.position.y = 50;
+	this.mesh.position.z = -400;
+};
+////// DEFINE THE SLOPES ON THE MOUNTAIN ///////
+defineMountain.prototype.createSlopes = function () {
+
+	// get the vertices
+	var verts = this.mesh.geometry.vertices;
+	var l = verts.length;
+
+	for (var i = 0; i < l; i++) {
+		var v = verts[i];
+
+		// get the data associated to it
+		var vprops = this.slopes[i];
+
+		// update the position of the vertex
+		v.x = vprops.x + Math.cos(vprops.ang) * vprops.amp;
+		v.y = vprops.y + Math.sin(vprops.ang) * vprops.amp;
+	}
+};
+
+// ___________________________________________________
+
+
 /////// CREATING THE ENTIRE WORLD //////////////
 
 function createWorld() {
 	world = new defineWorld();
 	scene.add(world.mesh);
+}
+
+////////// CREATING THE SLOPPY MOUNTAIN ////////////
+
+var mountain = void 0; //(global variable)
+function createMountain() {
+	mountain = new defineMountain();
+	scene.add(mountain.mesh);
 }
 
 ///// CREATE THE SKY /////////
@@ -45550,7 +45607,8 @@ function createSky() {
 	sky = new defineSky();
 	scene.add(sky.mesh);
 }
-//TODO: Read rest of aviator tut, create mountains.
+
+//TODO: fix trees!! fix camera
 
 
 ////////// INIT FUNCTION !!!!!!! ////////
@@ -45565,6 +45623,8 @@ function init() {
 	//Add World: skybox, ground, clouds, trees, rocks
 	createWorld();
 	createSky();
+	createMountain();
+	mountain.createSlopes();
 
 	/// FUCK ORBIT CONTROLS
 	addHelpers();
@@ -45663,7 +45723,7 @@ window.addEventListener('resize', handleWindowResize, false);
 // 	function(object){
 // 		scene.add(object)
 // 	})
-},{"../css/index.css":6,"three":20,"dat.gui":18,"three-orbitcontrols":22,"../textures/grassDiff.jpg":8,"../textures/grassBump.png":10,"../textures/grassAO.jpg":12,"../textures/daytonight.png":14,"../models/tree.obj":16}],30:[function(require,module,exports) {
+},{"../css/index.css":6,"three":22,"dat.gui":20,"three-orbitcontrols":18,"../textures/grassDiff.jpg":8,"../textures/grassBump.png":10,"../textures/grassAO.jpg":12,"../textures/daytonight.png":14,"../models/tree.obj":16}],34:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -45692,7 +45752,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '56051' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '64677' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -45833,5 +45893,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[30,4], null)
+},{}]},{},[34,4], null)
 //# sourceMappingURL=/js.b8953913.map
