@@ -441,11 +441,11 @@ const defineWorld = function(){
 	this.mesh = new THREE.Object3D();
 
 ////////// CREATING AN INSTANCE OF GROUND /////////////
-	ground = new defineGround();
-	ground.mesh.position.y= 0; // -150
-	ground.mesh.position.z= 0; //150
-	// Add the mesh of the sea to the scene
-	this.mesh.add(ground.mesh);
+	// ground = new defineGround();
+	// ground.mesh.position.y= 0; // -150
+	// ground.mesh.position.z= 0; //150
+	// // Add the mesh of the sea to the scene
+	// this.mesh.add(ground.mesh);
 
 
 /////////////////// CREATE RANDOM FUCKING TREES ///////////////////
@@ -460,14 +460,12 @@ const defineWorld = function(){
   	trees = treesArray[i % treesArray.length];
 		let theta = (Math.random() - 0.5)*4*Math.PI;
 		let phi = (Math.random() - 0.5)*2*Math.PI;
-		let theta2 = Math.random()*Math.PI / 2;
-		let phi2 = Math.random()*Math.PI;
 		trees.mesh.position.x = 300 * Math.sin(theta)* Math.cos(phi);
 		trees.mesh.position.y =  300 * Math.sin(theta)* Math.sin(phi);
 		trees.mesh.position.z =  300 * Math.cos(theta);
-		trees.mesh.rotation.x = 300 * Math.sin(theta2)* Math.cos(phi2);
-		trees.mesh.rotation.y =  300 * Math.sin(theta2)* Math.sin(phi2);
-		trees.mesh.rotation.z =  300 * Math.cos(theta2);
+		// trees.mesh.rotation.x = theta;
+		// trees.mesh.rotation.y = theta;
+		// trees.mesh.rotation.z = theta;
 		this.mesh.add(trees.mesh)
 }
 	// trees = new defineSpottyTree();
@@ -477,16 +475,16 @@ const defineWorld = function(){
 
 
 ///// CREATE RANDOM ROCKS //////
-	let numOfRocks = 500;
-	for (let i = 0; i < numOfRocks; i++) {
-		rocks = new defineRock();
-		let theta = (Math.random() - 0.5)*4*Math.PI;
-		let phi = (Math.random() - 0.5)*2*Math.PI;
-		rocks.mesh.position.x = 295 * Math.sin(theta)* Math.cos(phi);
-		rocks.mesh.position.y =  295 * Math.sin(theta)* Math.sin(phi);
-		rocks.mesh.position.z =  295 * Math.cos(theta) - 5;
-		this.mesh.add(rocks.mesh);
-	}
+	// let numOfRocks = 500;
+	// for (let i = 0; i < numOfRocks; i++) {
+	// 	rocks = new defineRock();
+	// 	let theta = (Math.random() - 0.5)*4*Math.PI;
+	// 	let phi = (Math.random() - 0.5)*2*Math.PI;
+	// 	rocks.mesh.position.x = 295 * Math.sin(theta)* Math.cos(phi);
+	// 	rocks.mesh.position.y =  295 * Math.sin(theta)* Math.sin(phi);
+	// 	rocks.mesh.position.z =  295 * Math.cos(theta) - 5;
+	// 	this.mesh.add(rocks.mesh);
+	// }
 }
 
 //// DEFINE SKY //////
@@ -511,17 +509,17 @@ const defineSky = function() {
 	    this.mesh.add(skyBox);
 
 			//////// CREATE MULTIPLE INSTANCES OF CLOUDS ///////////
-
-				let numOfClouds = 200;
-				for (let i = 0; i < numOfClouds; i++) {
-					clouds = new defineCloud();
-					let theta = (Math.random() - 0.5)*4*Math.PI;
-					let phi = (Math.random() - 0.5)*2*Math.PI;
-					clouds.mesh.position.x = 600 * Math.sin(theta)* Math.cos(phi);
-					clouds.mesh.position.y =  600 * Math.sin(theta)* Math.sin(phi);
-					clouds.mesh.position.z =  600 * Math.cos(theta) - 5;
-					this.mesh.add(clouds.mesh);
-				}
+				//
+				// let numOfClouds = 200;
+				// for (let i = 0; i < numOfClouds; i++) {
+				// 	clouds = new defineCloud();
+				// 	let theta = (Math.random() - 0.5)*4*Math.PI;
+				// 	let phi = (Math.random() - 0.5)*2*Math.PI;
+				// 	clouds.mesh.position.x = 600 * Math.sin(theta)* Math.cos(phi);
+				// 	clouds.mesh.position.y =  600 * Math.sin(theta)* Math.sin(phi);
+				// 	clouds.mesh.position.z =  600 * Math.cos(theta) - 5;
+				// 	this.mesh.add(clouds.mesh);
+				// }
 }
 
 /////// CREATING THE ENTIRE WORLD //////////////

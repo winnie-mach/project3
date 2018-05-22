@@ -41434,7 +41434,7 @@ exports.Projector = Projector;
 exports.CanvasRenderer = CanvasRenderer;
 exports.SceneUtils = SceneUtils;
 exports.LensFlare = LensFlare;
-},{}],22:[function(require,module,exports) {
+},{}],18:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -43919,7 +43919,7 @@ exports.gui = gui;
 exports.GUI = GUI$1;
 exports.default = index;
 //# sourceMappingURL=dat.gui.module.js.map
-},{}],18:[function(require,module,exports) {
+},{}],22:[function(require,module,exports) {
 var THREE = require('three')
 
 /**
@@ -45456,11 +45456,12 @@ var defineWorld = function defineWorld() {
 	this.mesh = new THREE.Object3D();
 
 	////////// CREATING AN INSTANCE OF GROUND /////////////
-	ground = new defineGround();
-	ground.mesh.position.y = 0; // -150
-	ground.mesh.position.z = 0; //150
-	// Add the mesh of the sea to the scene
-	this.mesh.add(ground.mesh);
+	// ground = new defineGround();
+	// ground.mesh.position.y= 0; // -150
+	// ground.mesh.position.z= 0; //150
+	// // Add the mesh of the sea to the scene
+	// this.mesh.add(ground.mesh);
+
 
 	/////////////////// CREATE RANDOM FUCKING TREES ///////////////////
 
@@ -45474,14 +45475,12 @@ var defineWorld = function defineWorld() {
 		trees = treesArray[i % treesArray.length];
 		var theta = (Math.random() - 0.5) * 4 * Math.PI;
 		var phi = (Math.random() - 0.5) * 2 * Math.PI;
-		var theta2 = Math.random() * Math.PI / 2;
-		var phi2 = Math.random() * Math.PI;
 		trees.mesh.position.x = 300 * Math.sin(theta) * Math.cos(phi);
 		trees.mesh.position.y = 300 * Math.sin(theta) * Math.sin(phi);
 		trees.mesh.position.z = 300 * Math.cos(theta);
-		trees.mesh.rotation.x = 300 * Math.sin(theta2) * Math.cos(phi2);
-		trees.mesh.rotation.y = 300 * Math.sin(theta2) * Math.sin(phi2);
-		trees.mesh.rotation.z = 300 * Math.cos(theta2);
+		// trees.mesh.rotation.x = theta;
+		// trees.mesh.rotation.y = theta;
+		// trees.mesh.rotation.z = theta;
 		this.mesh.add(trees.mesh);
 	}
 	// trees = new defineSpottyTree();
@@ -45491,16 +45490,16 @@ var defineWorld = function defineWorld() {
 
 
 	///// CREATE RANDOM ROCKS //////
-	var numOfRocks = 500;
-	for (var _i = 0; _i < numOfRocks; _i++) {
-		rocks = new defineRock();
-		var _theta = (Math.random() - 0.5) * 4 * Math.PI;
-		var _phi = (Math.random() - 0.5) * 2 * Math.PI;
-		rocks.mesh.position.x = 295 * Math.sin(_theta) * Math.cos(_phi);
-		rocks.mesh.position.y = 295 * Math.sin(_theta) * Math.sin(_phi);
-		rocks.mesh.position.z = 295 * Math.cos(_theta) - 5;
-		this.mesh.add(rocks.mesh);
-	}
+	// let numOfRocks = 500;
+	// for (let i = 0; i < numOfRocks; i++) {
+	// 	rocks = new defineRock();
+	// 	let theta = (Math.random() - 0.5)*4*Math.PI;
+	// 	let phi = (Math.random() - 0.5)*2*Math.PI;
+	// 	rocks.mesh.position.x = 295 * Math.sin(theta)* Math.cos(phi);
+	// 	rocks.mesh.position.y =  295 * Math.sin(theta)* Math.sin(phi);
+	// 	rocks.mesh.position.z =  295 * Math.cos(theta) - 5;
+	// 	this.mesh.add(rocks.mesh);
+	// }
 };
 
 //// DEFINE SKY //////
@@ -45525,17 +45524,17 @@ var defineSky = function defineSky() {
 	this.mesh.add(skyBox);
 
 	//////// CREATE MULTIPLE INSTANCES OF CLOUDS ///////////
-
-	var numOfClouds = 200;
-	for (var i = 0; i < numOfClouds; i++) {
-		clouds = new defineCloud();
-		var theta = (Math.random() - 0.5) * 4 * Math.PI;
-		var phi = (Math.random() - 0.5) * 2 * Math.PI;
-		clouds.mesh.position.x = 600 * Math.sin(theta) * Math.cos(phi);
-		clouds.mesh.position.y = 600 * Math.sin(theta) * Math.sin(phi);
-		clouds.mesh.position.z = 600 * Math.cos(theta) - 5;
-		this.mesh.add(clouds.mesh);
-	}
+	//
+	// let numOfClouds = 200;
+	// for (let i = 0; i < numOfClouds; i++) {
+	// 	clouds = new defineCloud();
+	// 	let theta = (Math.random() - 0.5)*4*Math.PI;
+	// 	let phi = (Math.random() - 0.5)*2*Math.PI;
+	// 	clouds.mesh.position.x = 600 * Math.sin(theta)* Math.cos(phi);
+	// 	clouds.mesh.position.y =  600 * Math.sin(theta)* Math.sin(phi);
+	// 	clouds.mesh.position.z =  600 * Math.cos(theta) - 5;
+	// 	this.mesh.add(clouds.mesh);
+	// }
 };
 
 /////// CREATING THE ENTIRE WORLD //////////////
@@ -45664,7 +45663,7 @@ window.addEventListener('resize', handleWindowResize, false);
 // 	function(object){
 // 		scene.add(object)
 // 	})
-},{"../css/index.css":6,"three":20,"dat.gui":22,"three-orbitcontrols":18,"../textures/grassDiff.jpg":8,"../textures/grassBump.png":10,"../textures/grassAO.jpg":12,"../textures/daytonight.png":14,"../models/tree.obj":16}],29:[function(require,module,exports) {
+},{"../css/index.css":6,"three":20,"dat.gui":18,"three-orbitcontrols":22,"../textures/grassDiff.jpg":8,"../textures/grassBump.png":10,"../textures/grassAO.jpg":12,"../textures/daytonight.png":14,"../models/tree.obj":16}],30:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -45693,7 +45692,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '54232' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '56051' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -45834,5 +45833,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[29,4], null)
+},{}]},{},[30,4], null)
 //# sourceMappingURL=/js.b8953913.map
