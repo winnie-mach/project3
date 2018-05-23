@@ -56,7 +56,7 @@ const createScene = () => {
   // Create the SCENE
   scene = new THREE.Scene();
 
-  // Add a fog effect to the scene, same colour as the background colour used in stylesheet
+  // Add a fog effect to the scene, same colour as the background colour
   scene.fog = new THREE.Fog(colours.blue03, 10, 2500);
 
 
@@ -72,11 +72,11 @@ const createScene = () => {
     nearPlane,
     farPlane
   );
-camera.position.x = 0;
-camera.position.y = 325;
-camera.position.z = 400;
-camera.lookAt({x: 0, y: 100.00000000000001, z: 450})
-camera.setFocalLength(70); // default at 35
+	camera.position.x = 0;
+	camera.position.y = 325;
+	camera.position.z = 400;
+	camera.lookAt({x: 0, y: 300.00000000000001, z: 450})
+	camera.setFocalLength(70); // default at 35
 
 //Create the RENDERER
 renderer = new THREE.WebGLRenderer({
@@ -99,7 +99,7 @@ container.appendChild(renderer.domElement);
 
 /////// CREATE LIGHTS /////////
 
-let hemisphereLight, shadowLight, ambientLight, pointLight, sunLight; //global variables
+let hemisphereLight, backLight, ambientLight, pointLight, sunLight; //global variables
 
 const createLights = () => {
   // A hemisphere Light is a gradient coloured light;
@@ -108,42 +108,134 @@ const createLights = () => {
 
   // A directional light shines from a specific direction.
   //Acts like the sun, means all the rays produced are parallel.
-  shadowLight = new THREE.DirectionalLight(0xffffff, .9);
+  backLight = new THREE.DirectionalLight(0xffffff, .9);
   //Set the direction of the direcitonal light
-  shadowLight.position.set(-300, 600, -600); //150, 350, 350
-	shadowLight.rotation.set(0, 0, 0)
+  backLight.position.set(-500, -700, -400); //150, 350, 350
+	backLight.rotation.set(0, 0, 0)
   //Allow directional light to cast shadows
-  shadowLight.castShadow = true;
-	// shadowLight.shadowCameraVisible = true;
+  backLight.castShadow = false;
+	// backLight.shadowCameraVisible = true;
   //Define the visible area of the projected shadow
-  shadowLight.shadow.camera.left = - 400;
-  shadowLight.shadow.camera.right = 400;
-  shadowLight.shadow.camera.top = 400;
-  shadowLight.shadow.camera.bottom = - 400;
-  shadowLight.shadow.camera.near = 1;
-  shadowLight.shadow.camera.far = - 1000;
+  backLight.shadow.camera.left = - 400;
+  backLight.shadow.camera.right = 400;
+  backLight.shadow.camera.top = 400;
+  backLight.shadow.camera.bottom = - 400;
+  backLight.shadow.camera.near = 1;
+  backLight.shadow.camera.far = - 1000;
   // Define the resolution of the shadow, the higher the better but also more expensive and less performant
-  shadowLight.shadow.mapSize.width = 2048;
-  shadowLight.shadow.mapSize.height = 2048;
+
+
 
 
 
 	ambientLight = new THREE.AmbientLight( 0x3f2806 );
-	scene.add( ambientLight );
 	pointLight = new THREE.PointLight( 0xffc95c, 1, 5000 );   //0xffaa00
 	pointLight.position.set(0, 500, 0);
-	scene.add( pointLight );
 	sunLight = new THREE.SpotLight( 0xffffff, 0.3, 0, Math.PI/2 );
 	sunLight.position.set( 1000, 2000, 1000 ); //1k, 2k, 1k
 	sunLight.castShadow = true;
 	sunLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( shadowConfig.shadowCameraFov, 1, shadowConfig.shadowCameraNear, shadowConfig.shadowCameraFar ) );
 	sunLight.shadow.bias = shadowConfig.shadowBias;
-	scene.add( sunLight );
-  // To activate the lights, just add them to the scene
+  // To activate the lights, just add them to the
+		scene.add( ambientLight );
+		scene.add( pointLight );
+		scene.add( sunLight );
   // scene.add(hemisphereLight);
-  // scene.add(shadowLight);
+  scene.add(backLight);
 
 }
+
+////////// SUNLIGHT ANIM BULLSHIT //////
+
+var angle = 0;
+var position = 0;
+
+// direction vector for movement
+var direction = new THREE.Vector3(1, 0, 0);
+var up = new THREE.Vector3(0, 0, 1);
+var axis = new THREE.Vector3();
+// scalar to simulate speed
+var speed = 0.5
+let path;
+var radius = 2000; //1100
+var degreesStart = 360;  //75
+var degreesEnd = 1; //30
+var radiansStart = (degreesStart * Math.PI) / 180;
+var radiansEnd = ((degreesEnd) * Math.PI) / 180;
+
+// the path
+  // path = new THREE.Path([
+  //   new THREE.Vector2(-70, -70), //-50, -50
+  //   new THREE.Vector2(-70, -70),
+	// 	]);
+		path = new THREE.EllipseCurve(0, 0, radius, radius, radiansStart, radiansEnd, true);
+
+  // var arcRadius = 50;
+	// path.set
+  // path.moveTo(0, 0 - arcRadius);
+  // path.absarc(0, 0, arcRadius, -Math.PI / 2, 0, false);
+  // path.lineTo(50, 50);
+
+
+  // Start angle and point
+  let previousAngle = getAngle( position );
+  let previousPoint = path.getPointAt( position );
+
+
+function drawPath() {
+  var vertices = path.getSpacedPoints(20);
+
+  // Change 2D points to 3D points
+  for (var i = 0; i < vertices.length; i++) {
+		let point = vertices[i]
+    vertices[i] = new THREE.Vector3(point.x, point.y, 0);
+  }
+  var lineGeometry = new THREE.Geometry();
+  lineGeometry.vertices = vertices;
+  var lineMaterial = new THREE.LineBasicMaterial({
+    color: 0xf7f052
+  });
+  var line = new THREE.Line(lineGeometry, lineMaterial)
+  scene.add(line);
+}
+
+function move() {
+
+  // add up to position for movement
+  position += 0.001;
+
+  // get the point at position
+  var point = path.getPointAt(position);
+  sunLight.position.x = point.x;
+  sunLight.position.y = point.y;
+
+  var angle = getAngle(position);
+  // set the quaternion
+  sunLight.quaternion.setFromAxisAngle( up, angle );
+
+  sunLight.position.x += ( point.x - previousPoint.x );
+  sunLight.position.y += ( point.y - previousPoint.y );
+
+  // set the quaternion
+  sunLight.rotation.z += ( angle - previousAngle );
+
+  previousPoint = point;
+  previousAngle = angle;
+
+}
+
+function getAngle( position ){
+// get the 2Dtangent to the curve
+  var tangent = path.getTangent(position).normalize();
+
+  // change tangent to 3D
+  angle = - Math.atan( tangent.x / tangent.y);
+
+  return angle;
+}
+
+////////////////////////////////////////////////
+
 
 THREE.ImageUtils.crossOrigin = ''; //Allow CORS
 
@@ -159,7 +251,6 @@ const defineGround = function() { //(global variable)
 		// grassDiffuse.needsUpdate = true;
 
 		let grassBump = THREE.ImageUtils.loadTexture(grassBmpTexture);
-		console.log('BUMP', grassBump);
 		grassBump.repeat.set(20, 20);
 		grassBump.wrapS = grassBump.wrapT = 	THREE.RepeatWrapping;
 		grassBump.anisotropy = 16;
@@ -180,7 +271,8 @@ const defineGround = function() { //(global variable)
 			aoMap: grassAO,
 			metalness: 0.0,
 			reflectivity: 0.0,
-			shininess: 0.0
+			shininess: 0.0,
+			wireframe: false
 		} )
 		console.log(mat);
   this.mesh = new THREE.Mesh( geo, mat );
@@ -233,7 +325,7 @@ const defineCloud = function() {
 }
 
 ///// DEFINING A CLOUD GROUP WITH OUR CLOUDS //////////
-const defineCloudGrp = function() { //(global variable)
+const defineCloudRing = function() { //(global variable)
   //Create an empty container
   this.mesh = new THREE.Object3D();
   //Choose a number of clouds to be scattered in the sky
@@ -566,25 +658,26 @@ const defineSky = function() {
 	    skyBox.rotation.order = 'XZY';
 	    skyBox.renderDepth = 500.0;
 	    this.mesh.add(skyBox);
-
-			//////// CREATE MULTIPLE INSTANCES OF CLOUDS ///////////
-
-				let numOfClouds = 200;
-				for (let i = 0; i < numOfClouds; i++) {
-					clouds = new defineCloud();
-					let theta = (Math.random() - 0.5)*4*Math.PI;
-					let phi = (Math.random() - 0.5)*2*Math.PI;
-					clouds.mesh.position.x = 700 * Math.sin(theta)* Math.cos(phi);
-					clouds.mesh.position.y =  700 * Math.sin(theta)* Math.sin(phi);
-					clouds.mesh.position.z =  700 * Math.cos(theta) - 5;
-					this.mesh.add(clouds.mesh);
-				}
 }
 
+//////// CREATE MULTIPLE INSTANCES OF CLOUDS ///////////
+const defineCloudGrp = function(){
+	this.mesh = new THREE.Object3D();
+	let numOfClouds = 200;
+	for (let i = 0; i < numOfClouds; i++) {
+		clouds = new defineCloud();
+		let theta = (Math.random() - 0.5)*4*Math.PI;
+		let phi = (Math.random() - 0.5)*2*Math.PI;
+		clouds.mesh.position.x = 700 * Math.sin(theta)* Math.cos(phi);
+		clouds.mesh.position.y =  700 * Math.sin(theta)* Math.sin(phi);
+		clouds.mesh.position.z =  700 * Math.cos(theta) - 5;
+		this.mesh.add(clouds.mesh);
+	}
+}
 
 //////// DEFINE MOUNTAINS /////
 const defineMountain = function(){
-	var geo = new THREE.CylinderGeometry(300,50,200,40,10);
+	let geo = new THREE.CylinderGeometry(300,50,200,40,10);
 	geo.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
 
 	// important: by merging vertices we ensure the continuity of the waves
@@ -672,10 +765,14 @@ function createSky() {
 	scene.add(sky.mesh);
 }
 
+///// CREATE THE CLOUDS //////
+function createClouds() {
+	clouds = new defineCloudGrp();
+	scene.add(clouds.mesh);
+}
 
 
-
-//TODO: offset clouds + sky, animate lights day + night, grass? alpha?
+//TODO: animate lights day + night, grass? alpha?
 
 
 
@@ -696,16 +793,19 @@ function init() {  //add (event) afterwards
 
   //Add Lights
   createLights();
+	drawPath();
+	// move();
 
 	//Add World: skybox, ground, clouds, trees, rocks
 	createWorld();
 	createSky();
+	createClouds();
 	createMountain();
 	mountain.createSlopes();
 
 
   /// FUCK ORBIT CONTROLS
-  addHelpers();
+  // addHelpers();
 
 
   // //Add MouseMove Event Listener
@@ -721,8 +821,10 @@ function init() {  //add (event) afterwards
 
 function loop() {
   //Rotate the ground and the sky
-	// world.mesh.rotation.x += 0.005;
-	// sky.mesh.rotation.x += 0.001;
+	world.mesh.rotation.x += 0.004;
+	clouds.mesh.rotation.x += 0.002;
+	sky.mesh.rotation.x += 0.001;
+
 
 
   //Render the scene (+ its contents) and the camera. Need to rerender every time the animation changes.
@@ -778,13 +880,13 @@ function addHelpers() {
 	 cameraHelper.update();
 
 	 //6. DirectionalLight Helper
-	 let dlightHelper = new THREE.DirectionalLightHelper(shadowLight, 50); // 50 is helper size, shadowLight is my directional light
+	 let dlightHelper = new THREE.DirectionalLightHelper(backLight, 50); // 50 is helper size, shadowLight is my directional light
 	 scene.add(dlightHelper);
 	 dlightHelper.update();
 
 	 //7. HemisphereLight Helper
 	 let hlightHelper = new THREE.HemisphereLightHelper(hemisphereLight, 50, 300); // 50 is sphere size, 300 is arrow length, hemisphereLight is my light I've passed in.
-	 scene.add(hlightHelper);
+	 // scene.add(hlightHelper);
 
 	 //8. Grid Helper
 	 let gridHelper = new THREE.GridHelper(1000, 40, colours.red01); // 500 is grid size, 20 is grid step
@@ -792,8 +894,14 @@ function addHelpers() {
 
 	 //9. sunLight Helper
 	 let shadowCameraHelper = new THREE.CameraHelper( sunLight.shadow.camera );
-				shadowCameraHelper.visible = shadowConfig.shadowCameraVisible;
-				scene.add( shadowCameraHelper );
+		shadowCameraHelper.visible;	shadowConfig.shadowCameraVisible;
+		scene.add( shadowCameraHelper );
+
+	//10. PointLight Helper
+	let pointLightHelper = new THREE.PointLightHelper( pointLight, 10 );
+	scene.add( pointLightHelper );
+
+
 
 }
 
